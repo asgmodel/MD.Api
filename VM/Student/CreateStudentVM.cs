@@ -4,13 +4,166 @@ using Api.SM.Models;
 using Microsoft.EntityFrameworkCore;
 namespace Api.SM.VM;
 
+//public class CreateNameVM
+//{
+//    public string Name { get; set; }
+//    public string Title { get; set; }
+//}
+//public class UpdateNameVM
+//{
+//    public string Id { get; set; }
+//    public string Name { get; set; }
+//    public string Title { get; set; }
+//}
+//public class NameVM
+//{
+//    public string Id { get; set; }
+//    public string FullName { get; set; }
+//}
+//public class CreateCardVM
+//{
+//    public CreateNameVM Name { get; set; }
+//    public DateTime Date { get; set; }
+//    public SexType? SexType { get; set; }
+//}
+//public class CardVM
+//{
+//    public string Id { get; set; }
+//    public string FullName { get; set; }
+//    public DateTime Date { get; set; }
+//    public string SexType { get; set; }
+//}
+//public class UpdateCardVM
+//{
+//    public string Id { get; set; }
+//    public CreateNameVM FullName { get; set; }
+//    public DateTime Date { get; set; }
+//    public SexType? SexType { get; set; }
+//}
+//public class CreateStudentVM
+//    {
+//        public string? RowId { get; set; }
+//        public string? SchoolId { get; set; }
+//        public string? CardId { get; set; } // نفترض أن الكارت موجود
+//        public List<string>? ModulIds { get; set; } = new();
+//        public List<string>? TeacherIds { get; set; } = new();
+//    }
 
-public class CreateStudentVM
+
+//public class UpdateStudentVM
+//{
+//    public string Id { get; set; }
+//    public string? RowId { get; set; }
+//    public string? SchoolId { get; set; }
+//    public string? CardId { get; set; }
+//    public List<string>? ModulIds { get; set; } = new();
+//    public List<string>? TeacherIds { get; set; } = new();
+//}
+
+//public class StudentVM
+//{
+//    public string Id { get; set; }
+//    public CreateRowsVM? Row { get; set; }
+//    public string? SchoolName { get; set; }
+//    public string? CardName { get; set; }
+//   // public List<string>? ModulNames { get; set; }
+//   // public List<string>? TeacherNames { get; set; }
+//}
+//public class CreateSchoolVM
+//{
+//    public string Id { get; set; } = string.Empty;
+
+//    public string Name { get; set; }
+//    public ICollection<RowModel> Rows { get; set; } = new List<RowModel>();
+
+//    // أي خصائص أخرى تحتاجها
+//}
+
+//// نموذج لتحديث بيانات المدرسة
+//public class UpdateSchoolVM
+//{
+//    public string Id { get; set; }
+//    public string Name { get; set; }
+//    // أي خصائص أخرى تحتاجها
+//}
+
+public enum SexTypeVM
 {
-    public string Id { get; set; } = string.Empty;
-
-    public CreateRowModelVM? Row { get; set; }
-
+    Male,
+    Famle,
 }
 
+public class NameVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Title { get; set; }
+    public string FullName => $"{Name} {Title}";
+}
 
+public class CardVM
+{
+    public string Id { get; set; }
+
+    public NameVM Name { get; set; }
+    public DateTime Date { get; set; }
+    public SexTypeVM? SexType { get; set; }
+}
+
+public class SchoolVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+}
+public class CreateRowVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string RowId { get; set; }
+    public string RowName { get; set; }
+    public string? SchoolId { get; set; }
+}
+
+public class RowVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string RowId { get; set; }
+    public string RowName { get; set; }
+    public string? SchoolId { get; set; }
+    public SchoolVM? School { get; set; }
+}
+
+public class ModulVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string RowId { get; set; }
+    public string RowName { get; set; }
+}
+public class CreateStudentVM
+{
+    public string? RowId { get; set; }
+    public string? SchoolId { get; set; }
+    public string? Name { get; set; } // نفترض أن الكارت موجود
+ //   public CardVM? Card { get; set; }
+}
+public class StudentVM
+{
+    public string Id { get; set; }
+    public string? RowId { get; set; }
+    public RowVM? Row { get; set; }
+    public CardVM? Card { get; set; }
+    public string? SchoolId { get; set; }
+    public SchoolVM? School { get; set; }
+    public ICollection<ModulVM> Moduls { get; set; } = new List<ModulVM>();
+    public ICollection<TeacherVM> Teachers { get; set; } = new List<TeacherVM>();
+}
+
+public class TeacherVM
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string RowId { get; set; }
+    public string RowName { get; set; }
+}

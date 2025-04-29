@@ -2,7 +2,8 @@
 using Api.SM.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.SM.Data;
+namespace Api.SM.Data
+{
 public class DataContext :DbContext
 {
     // Add properties like DbSet for your models
@@ -29,4 +30,5 @@ public class DataContext :DbContext
     public DbSet<TeacherModel> Teachers { get; set; }
     public DbSet<StudentModel> Students { get; set; }
     // You can add any custom functions for DbContext here
+}
 }
