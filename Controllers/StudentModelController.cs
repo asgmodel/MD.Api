@@ -251,9 +251,14 @@ namespace Api.SM.Controllers
             var student = _mapper.Map<StudentModel>(studentVM);
             student.Id = new IDgenerate().GenvetId("Student", '-', 10, 4, 3);
             //   student.Name = student.Card.Name.FullName;
-            await _repository.CreateAsync(student);
+           var item=  await _repository.CreateAsync(student);
 
-            return CreatedAtAction(nameof(GetById), new { id = student.Id }, student);
+            if (item == null)
+                return BadRequest();
+
+
+
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
         // POST: /StudentModel
         [HttpPost]

@@ -46,14 +46,6 @@ public static class InstallServ
             // Modul
             CreateMap<ModulModel, ModulVM>().ReverseMap();
 
-            // Student
-            CreateMap<StudentModel, StudentVM>()
-                .ForMember(dest => dest.Row, opt => opt.MapFrom(src => src.Row))
-                .ForMember(dest => dest.Card, opt => opt.MapFrom(src => src.Card))
-                .ForMember(dest => dest.School, opt => opt.MapFrom(src => src.School))
-                .ForMember(dest => dest.Moduls, opt => opt.MapFrom(src => src.Moduls))
-                .ForMember(dest => dest.Teachers, opt => opt.MapFrom(src => src.Teachers))
-                .ReverseMap();
 
             // Teacher
             CreateMap<TeacherModel, TeacherVM>().ReverseMap();

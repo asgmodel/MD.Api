@@ -160,6 +160,8 @@ public interface ISchoolRepository : IRepsitory<SchoolModel>
     Task<IEnumerable<RowModel>> GetRowsBySchoolIdAsync(string schoolId);
     Task AddStudent(string studentid, string schoolId);
 
+    Task<CardModel> IssuingCardStudent(CardModel card);
+
 }
 
 //  ‰›Ì– SchoolRepository
@@ -167,23 +169,16 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
 {
     private readonly IRowRepository _rowRepository;
     private readonly IStudentRepository _studentRepository;
+    private readonly ICardRepository _cardRepository;
 
-    public SchoolRepository(DataContext context, IRowRepository rowRepository, IStudentRepository studentRepository) : base(context)
+    public SchoolRepository(DataContext context, IRowRepository rowRepository, IStudentRepository studentRepository, ICardRepository cardRepository) : base(context)
     {
         _rowRepository = rowRepository;
         _studentRepository = studentRepository;
+        _cardRepository = cardRepository;
     }
 
-    public override async Task CreateAsync(SchoolModel entity)
-    {
-        bool isNameTaken = _dbSet.Any(s => s.Name == entity.Name);
-        if (isNameTaken)
-        {
-            throw new InvalidOperationException("A school with the same name already exists.");
-        }
 
-        await base.CreateAsync(entity);
-    }
 
     public async Task AddRowAsync(string rowId, string schoolId)
     {
@@ -210,10 +205,8 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
         var school = await GetByIdAsync(schoolId)
             ?? throw new InvalidOperationException("School not found.");
 
-        if (school.Students.Any(s => s.Id == student.Id))
-            throw new InvalidOperationException("Student already assigned to this school.");
-
-        school.Students.Add(student);
+        await  _studentRepository.CreateAsync(student);
+        //school.Students.Add(student);
         student.SchoolId = school.Id;
 
         await UpdateAsync(school);
@@ -259,6 +252,18 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
         return _dbSet.ToList();
     }
 
+    public async Task<CardModel> IssuingCardStudent(CardModel card)
+    {
+
+
+        var student =await _studentRepository.GetByIdAsync(card.StudentId);
+        if (student == null&&student.SchoolId!=card.SchoolId&&student.RowId!=card.RowId)
+        {
+            return null;
+        }
+      ;
+        return await _cardRepository.CreateAsync(card);
+    }
 }
 public abstract class Validator
 {

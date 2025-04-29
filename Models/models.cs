@@ -228,11 +228,21 @@ namespace Api.SM.Models
     public class CardModel
     {
         [Key]
-        public string Id { get; set; }// = Guid.NewGuid().ToString();
-        public NameModel Name { get; set; }
-        public string NameId { get; set; }
+        public string? Id { get; set; }// = Guid.NewGuid().ToString();
+       
         public DateTime Date { get; set; }
-        public SexType? SexType { get; set; }
+
+        public string? SchoolId { get; set; }
+
+
+        public string? StudentId { get; set; }
+
+        public string? RowId { get; set; }
+
+        public string? Academic { get; set; } //
+        public string? Stage { get; set; }
+
+
     }
 
     public class SchoolModel
@@ -266,7 +276,7 @@ namespace Api.SM.Models
         public string Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
         public string Name { get; set; }
         public string RowId { get; set; }
-        public string RowName { get; set; }
+        public RowModel? Row { get; set; }
         public ICollection<TeacherModel> Teachers { get; set; } = new List<TeacherModel>();
         public ICollection<StudentModel> Students { get; set; } = new List<StudentModel>();
     }
@@ -275,12 +285,18 @@ namespace Api.SM.Models
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
-        public string Name { get; set; }
+        public NameModel? Name { get; set; }
+        public string? NameId { get; set; }
         public string? RowId { get; set; }
         public RowModel? Row { get; set; }
+
         public CardModel? Card { get; set; }
         public string? SchoolId { get; set; }
         public SchoolModel? School { get; set; }
+        public SexType? SexType { get; set; }
+
+        public int Age { get; set; }
+
         public ICollection<ModulModel> Moduls { get; set; } = new List<ModulModel>();
         public ICollection<TeacherModel> Teachers { get; set; } = new List<TeacherModel>();
     }
@@ -288,10 +304,13 @@ namespace Api.SM.Models
     public class TeacherModel
     {
         [Key]
-        public string Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
-        public string Name { get; set; }
-        public string RowId { get; set; }
-        public string RowName { get; set; }
+        public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
+        
+        public string? NameId { get; set; }
+        public NameModel? Name { get; set; }
+     
+
+        public ICollection<RowModel>? Rows { get; set; }
         public ICollection<SchoolModel> SchoolModels { get; set; } = new List<SchoolModel>();
         public ICollection<ModulModel> Moduls { get; set; } = new List<ModulModel>();
         public ICollection<StudentModel> Students { get; set; } = new List<StudentModel>();

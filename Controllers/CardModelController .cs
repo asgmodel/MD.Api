@@ -97,6 +97,7 @@ using Api.SM.Repository;
 using Api.SM.VM;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.SM.Controllers
 {
@@ -117,14 +118,14 @@ namespace Api.SM.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCards()
         {
-            var cards = await _repository.GetAllCardsAsync();
+            var cards = await _repository.GetAllAsync();
             if (cards == null)
                 return NotFound();
 
             var cardVMs = _mapper.Map<IEnumerable<CardVM>>(cards); // Correct Mapping
             return Ok(cardVMs);
         }
-
+        [Authorize ]
         // ✅ Get card by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCardById(string id)
@@ -150,27 +151,27 @@ namespace Api.SM.Controllers
         //    var cardVM = _mapper.Map<CardVM>(cardModel); // Return the created card
         //    return CreatedAtAction(nameof(GetCardById), new { id = cardModel.Id }, cardVM);
         //}
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CardVM vm)
-        {
-            if (vm == null)
-                return BadRequest();
-            var cardModel = _mapper.Map<CardModel>(vm); // Map CreateCardVM -> CardModel
-            var card = new CardModel
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = new NameModel
-                {
-                    Name = vm.Name.Name,   // ✅ صح
-                    Title = vm.Name.Title  // ✅ صح
-                },
-                Date = vm.Date,
-                SexType = (SexType?)vm.SexType
-            };
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] CardVM vm)
+        //{
+        //    if (vm == null)
+        //        return BadRequest();
+        //    //var cardModel = _mapper.Map<CardModel>(vm); // Map CreateCardVM -> CardModel
+        //    //var card = new CardModel
+        //    //{
+        //    //    Id = Guid.NewGuid().ToString(),
+        //    //    Name = new NameModel
+        //    //    {
+        //    //        Name = vm.Name.Name,   // ✅ صح
+        //    //        Title = vm.Name.Title  // ✅ صح
+        //    //    },
+        //    //    Date = vm.Date,
+        //    //    SexType = (SexType?)vm.SexType
+        //    //};
 
-            await _repository.CreateAsync(card);
-            return CreatedAtAction(nameof(GetCardById), new { id = card.Id }, card);
-        }
+        //    await _repository.CreateAsync(card);
+        //    return CreatedAtAction(nameof(GetCardById), new { id = card.Id }, card);
+        //}
 
         // ✅ Update existing card
         //[HttpPut("{id}")]
@@ -203,11 +204,10 @@ namespace Api.SM.Controllers
 
         // ✅ Get FullName of Name related to Card
         [HttpGet("{studentId}/name")]
-        public async Task<IActionResult> GetCardFullName(string studentId)
+        public async Task<IActionResult> GetCardFullName()
         {
-            var names = await _repository.GetNameModulsAsync(studentId);
-            if (names == null || names.Count == 0)
-                return NotFound("No name found for this student/card.");
+            var names = await _repository.GetAllAsync();
+            
 
             return Ok(names);
         }

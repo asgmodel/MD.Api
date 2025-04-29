@@ -88,7 +88,7 @@ namespace Api.SM.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var names = await _repository.GetAllNamesAsync();
+            var names = await _repository.GetAllAsync();
             var nameVMs = _mapper.Map<IEnumerable<NameVM>>(names);
             return Ok(nameVMs);
         }

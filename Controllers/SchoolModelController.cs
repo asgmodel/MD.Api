@@ -148,6 +148,7 @@ using Api.SM.Models;
 using Api.SM.Repository;
 using Api.SM.VM;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MD.Api.Controllers
@@ -165,7 +166,10 @@ namespace MD.Api.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
+
         [HttpGet("all")]
+
         public async Task<IActionResult> GetAll()
         {
             var schools = await _repository.GetAllAsync();

@@ -197,6 +197,8 @@ using Microsoft.EntityFrameworkCore;
     Task<ICollection<TeacherModel>> GetTeachersAsync(string studentId);
     Task<bool> UpdateCardAsync(string studentId, CardModel newCard);
     Task InfoAsync();
+
+    
     //Task IEnumerable<StudentModel> GetAll();
 }
 
@@ -216,6 +218,39 @@ public class StudentRepository : Repository<StudentModel>, IStudentRepository
         _rowRepository = rowRepository;
        // _cardRepository = cardRepository;
     }
+
+    public override async Task<StudentModel?> GetByIdAsync(string id)
+    {
+        var student =  await base.GetByIdAsync(id);
+
+        if (student == null)
+        {
+            return null;
+        }
+        var row = await _rowRepository.GetByIdAsync(student.RowId);
+
+        student.School = row?.School;
+        student.Row = row;
+        return student;
+    }
+    public override async Task<StudentModel?> CreateAsync(StudentModel entity)
+    {
+
+         
+        var row =await _rowRepository.GetByIdAsync(entity.RowId);
+
+        if (row == null||row.SchoolId==entity.SchoolId)
+        {
+           return null;
+        }
+
+
+
+      return  await base.CreateAsync(entity);
+         
+    }
+
+
 
     public async Task<RowModel?> GetRowAsync(string Id)
     {
@@ -259,7 +294,7 @@ public class StudentRepository : Repository<StudentModel>, IStudentRepository
 
         foreach (var student in GetAllAsync())
         {
-            var studentName = student.Card?.Name?.FullName ?? "Unknown";
+            var studentName = student?.Name?.FullName ?? "Unknown";
             var rowName = student.Row?.Name ?? "No Row";
 
             Console.WriteLine($"Student: {studentName} - Row: {rowName}");

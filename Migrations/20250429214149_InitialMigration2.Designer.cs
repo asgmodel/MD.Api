@@ -4,6 +4,7 @@ using Api.SM.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MD.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20250429214149_InitialMigration2")]
+    partial class InitialMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,25 +30,18 @@ namespace MD.Api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Academic")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RowId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("NameId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SchoolId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Stage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("SexType")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("NameId");
 
                     b.ToTable("CardModels");
                 });
@@ -139,14 +135,12 @@ namespace MD.Api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
                     b.Property<string>("CardId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("NameId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RowId")
                         .HasColumnType("nvarchar(450)");
@@ -154,14 +148,9 @@ namespace MD.Api.Migrations
                     b.Property<string>("SchoolId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("SexType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CardId");
-
-                    b.HasIndex("NameId");
 
                     b.HasIndex("RowId");
 
@@ -260,6 +249,15 @@ namespace MD.Api.Migrations
                     b.ToTable("StudentModelTeacherModel");
                 });
 
+            modelBuilder.Entity("Api.SM.Models.CardModel", b =>
+                {
+                    b.HasOne("Api.SM.Models.NameModel", "Name")
+                        .WithMany()
+                        .HasForeignKey("NameId");
+
+                    b.Navigation("Name");
+                });
+
             modelBuilder.Entity("Api.SM.Models.ModulModel", b =>
                 {
                     b.HasOne("Api.SM.Models.RowModel", "Row")
@@ -290,10 +288,6 @@ namespace MD.Api.Migrations
                         .WithMany()
                         .HasForeignKey("CardId");
 
-                    b.HasOne("Api.SM.Models.NameModel", "Name")
-                        .WithMany()
-                        .HasForeignKey("NameId");
-
                     b.HasOne("Api.SM.Models.RowModel", "Row")
                         .WithMany("Students")
                         .HasForeignKey("RowId");
@@ -303,8 +297,6 @@ namespace MD.Api.Migrations
                         .HasForeignKey("SchoolId");
 
                     b.Navigation("Card");
-
-                    b.Navigation("Name");
 
                     b.Navigation("Row");
 
