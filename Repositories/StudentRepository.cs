@@ -296,12 +296,7 @@ namespace Api.SM.Repository
         public override async Task<StudentModel?> CreateAsync(StudentModel entity)
         {
             
-            var nameExists = await _nameRepository.GetByIdAsync(entity.NameId);
-            if (nameExists == null)
-            {
-
-                return null; // أو return BadRequest("الاسم غير موجود");
-            }
+           
             // تحقق من وجود الصف
             if (string.IsNullOrWhiteSpace(entity.RowId))
                 return null;

@@ -372,7 +372,7 @@ namespace Api.SM.Controllers
                 if (row.SchoolId != studentVM.SchoolId)
                     return BadRequest("الصف لا ينتمي إلى نفس المدرسة.");
 
-                return BadRequest("حدث خطأ أثناء إنشاء الطالب.");
+               // return BadRequest("حدث خطأ أثناء إنشاء الطالب.");
             }
 
             var studentViewModel = _mapper.Map<StudentVM>(createdStudent);

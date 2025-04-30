@@ -298,6 +298,17 @@ namespace Api.SM.Models
         public ICollection<TeacherModel> Teachers { get; set; } = new List<TeacherModel>();
     }
 
+    public class SchoolTeacher
+    {
+        public string? Id { get; set; }
+
+        public string? SchoolId { get; set; }
+        public SchoolModel SchoolModel { set; get; }
+
+        public string TeacherId { set; get; }
+        public TeacherModel TeacherModel { set; get; }
+    }
+
     public class TeacherModel
     {
         [Key]
@@ -308,7 +319,7 @@ namespace Api.SM.Models
      
 
         public ICollection<RowModel>? Rows { get; set; }
-        public ICollection<SchoolModel> SchoolModels { get; set; } = new List<SchoolModel>();
+        public ICollection<SchoolTeacher> SchoolModels { get; set; } = new List<SchoolTeacher>();
         public ICollection<ModulModel> Moduls { get; set; } = new List<ModulModel>();
         public ICollection<StudentModel> Students { get; set; } = new List<StudentModel>();
     }

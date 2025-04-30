@@ -117,7 +117,7 @@ public class SchoolVM
 }
 public class CreateRowVM
 {
-    public string Id { get; set; }
+  
     public string Name { get; set; }
     public string? SchoolId { get; set; }
 }
@@ -146,7 +146,7 @@ public class ModulVM
 
 public class CreateStudentVM
 {
-    public string Id { get; set; }
+ 
     public NameModel? Name { get; set; }
     public string? RowId { get; set; }
     public string? SchoolId { get; set; }
@@ -157,6 +157,7 @@ public class StudentVM
 {
     public string Id { get; set; }
     public string? RowId { get; set; }
+    public NameModel? Name { get; set; }
     public RowVM? Row { get; set; }
     public CardVM? Card { get; set; }
     public string? SchoolId { get; set; }

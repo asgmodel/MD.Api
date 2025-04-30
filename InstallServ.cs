@@ -28,6 +28,7 @@ public static class InstallServ
             //CreateMap<CreateSchoolVM, SchoolModel>().ReverseMap();
             //CreateMap<UpdateSchoolVM, SchoolModel>().ReverseMap();
 
+            CreateMap<StudentVM, StudentModel>().ReverseMap();
 
 
             CreateMap<NameModel, NameVM>().ReverseMap();
