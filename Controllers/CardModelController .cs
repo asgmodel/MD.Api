@@ -125,7 +125,7 @@ namespace Api.SM.Controllers
             var cardVMs = _mapper.Map<IEnumerable<CardVM>>(cards); // Correct Mapping
             return Ok(cardVMs);
         }
-        [Authorize ]
+     
         // ✅ Get card by ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCardById(string id)

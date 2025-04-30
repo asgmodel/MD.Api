@@ -160,7 +160,7 @@ public interface ISchoolRepository : IRepsitory<SchoolModel>
     Task<IEnumerable<RowModel>> GetRowsBySchoolIdAsync(string schoolId);
     Task AddStudent(string studentid, string schoolId);
 
-    Task<CardModel> IssuingCardStudent(CardModel card);
+    //Task<CardModel> IssuingCardStudent(CardModel card);
 
 }
 
@@ -179,6 +179,10 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
     }
 
 
+    //public override async Task<SchoolModel?> GetByIdAsync(string schoolId)
+    //{
+    //    return await _dbSet.FirstOrDefaultAsync(s => s.Id == schoolId);
+    //}
 
     public async Task AddRowAsync(string rowId, string schoolId)
     {
@@ -252,19 +256,33 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
         return _dbSet.ToList();
     }
 
+    //    public async Task<CardModel> IssuingCardStudent(CardModel card)
+    //    {
+
+
+    //        var student =await _studentRepository.GetByIdAsync(card.StudentId);
+    //        if (student == null&&student.SchoolId!=card.SchoolId&&student.RowId!=card.RowId)
+    //        {
+    //            return null;
+    //        }
+
+    //        return await _cardRepository.CreateAsync(card);
+    //    }
     public async Task<CardModel> IssuingCardStudent(CardModel card)
     {
+        var student = await _studentRepository.GetByIdAsync(card.StudentId);
 
 
-        var student =await _studentRepository.GetByIdAsync(card.StudentId);
-        if (student == null&&student.SchoolId!=card.SchoolId&&student.RowId!=card.RowId)
+        if (student?.SchoolId != card.SchoolId || student?.RowId != card.RowId)
         {
             return null;
         }
-      ;
+
         return await _cardRepository.CreateAsync(card);
     }
+
 }
+
 public abstract class Validator
 {
     public static bool Validate<T>(ICollection<T> items, T item) where T : class

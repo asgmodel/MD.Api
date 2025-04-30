@@ -166,7 +166,7 @@ namespace MD.Api.Controllers
             _mapper = mapper;
         }
 
-        [AllowAnonymous]
+        
 
         [HttpGet("all")]
 

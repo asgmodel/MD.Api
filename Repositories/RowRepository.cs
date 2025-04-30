@@ -1,5 +1,6 @@
 ﻿using Api.SM.Data;
 using Api.SM.Models;
+using Api.SM.VM;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.SM.Repository
@@ -13,18 +14,46 @@ namespace Api.SM.Repository
     // تعريف الصف الخاص بـ RowRepository
     public class RowRepository : Repository<RowModel>, IRowRepository
     {
-        public RowRepository(DataContext context) : base(context)
+        //private readonly ISchoolRepository _schoolRepository;
+        public RowRepository(DataContext context ) : base(context)
         {
+            //_schoolRepository = schoolRepository;
         }
+  
+           
+    public override async Task<RowModel?> CreateAsync(RowModel entity)
+        {
+            var schoolExists = await GetByIdAsync(entity.SchoolId);
+        
+        if (schoolExists != null)
+        {
+            return null; 
+        }
+        return await base.CreateAsync(entity); 
 
+        }
+        //public override async Task<RowModel?> CreateAsync(RowModel entity)
+        //{
+        //    var schoolExists = await _dbSet.Include(s => s.Id == entity.School.Id).FirstOrDefaultAsync();
+        //    if (schoolExists !=null)
+        //    {
+        //        return null; // المدرسة غير موجودة
+        //    }
+
+        //    return await base.CreateAsync(entity); // أضف الصف إذا المدرسة موجودة
+        //}
+        //public async Task<SchoolModel> IsSchoolExistsAsync(string schoolId)
+        //{
+        //    return await _dbSet.AnyAsync(s => s.Id == schoolId);
+        //}
 
         public override Task<RowModel?> GetByIdAsync(string id)
         {
 
 
             return _dbSet.
-                   Where(x=>x.Id==id).
-                   Include(p=>p.School).
+                   Where(x => x.Id == id).
+                   Include(p => p.School).
                    FirstOrDefaultAsync();
         }
         //public async Task AddStudent(string id, StudentModel student)

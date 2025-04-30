@@ -261,8 +261,6 @@ namespace Api.SM.Models
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
         public string Name { get; set; }
-        public string RowId { get; set; }
-        public string RowName { get; set; }
         public string? SchoolId { get; set; }
         public SchoolModel? School { get; set; }
         public ICollection<ModulModel> Moduls { get; set; } = new List<ModulModel>();
@@ -289,7 +287,6 @@ namespace Api.SM.Models
         public string? NameId { get; set; }
         public string? RowId { get; set; }
         public RowModel? Row { get; set; }
-
         public CardModel? Card { get; set; }
         public string? SchoolId { get; set; }
         public SchoolModel? School { get; set; }

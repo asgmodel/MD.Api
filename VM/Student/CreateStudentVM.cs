@@ -119,8 +119,6 @@ public class CreateRowVM
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public string RowId { get; set; }
-    public string RowName { get; set; }
     public string? SchoolId { get; set; }
 }
 
@@ -128,7 +126,6 @@ public class RowVM
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public string RowId { get; set; }
     public string RowName { get; set; }
     public string? SchoolId { get; set; }
     public SchoolVM? School { get; set; }
@@ -141,11 +138,19 @@ public class ModulVM
     public string RowId { get; set; }
     public string RowName { get; set; }
 }
+//public enum SexTypeVM
+//{
+//    Male = 0,     // ذكر
+//    Female = 1    // أنثى
+//}
+
 public class CreateStudentVM
 {
+    public string Id { get; set; }
+    public NameModel? Name { get; set; }
     public string? RowId { get; set; }
     public string? SchoolId { get; set; }
-    public string? Name { get; set; } // نفترض أن الكارت موجود
+    public int? Age { get; set; } // نفترض أن الكارت موجود
  //   public CardVM? Card { get; set; }
 }
 public class StudentVM

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MD.Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250429230352_InitialMigration4")]
-    partial class InitialMigration4
+    [Migration("20250430011808_InitialCreate4")]
+    partial class InitialCreate4
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,14 +102,6 @@ namespace MD.Api.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RowId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RowName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

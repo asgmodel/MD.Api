@@ -98,6 +98,7 @@ using Api.SM.Repository;
 using Api.SM.VM;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MD.Api.Controllers
 {
@@ -134,7 +135,27 @@ namespace MD.Api.Controllers
             return Ok(rowModel);
         }
 
-        // POST: /RowModel
+        //// POST: /RowModel
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] CreateRowVM rowModel)
+        //{
+        //    if (rowModel == null)
+        //    {
+        //        return BadRequest();
+        //    }
+
+
+        //    var row = _mapper.Map<RowModel>(rowModel);
+
+
+        //    row.Id = Guid.NewGuid().ToString(); // استخدم IDgenerate هنا كما هو في الموديل.
+
+        //    var rowVMs = await _repository.CreateAsync(row);
+        //    if (rowVMs == null)
+        //        return BadRequest();
+
+        //    return CreatedAtAction(nameof(GetById), new { id = rowVMs.Id }, rowModel);
+        //}
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRowVM rowModel)
         {
@@ -143,14 +164,28 @@ namespace MD.Api.Controllers
                 return BadRequest();
             }
 
+            // تحقق من وجود المدرسة قبل إنشاء الصف
+            if (rowModel == null || string.IsNullOrWhiteSpace(rowModel.SchoolId))
+            {
+                return BadRequest("البيانات المدخلة غير صالحة.");
+            }
+
+            //var school = await _repository.GetByIdAsync(rowModel.SchoolId);
+            //if (school == null)
+            //{
+            //    return BadRequest("المدرسة غير موجودة.");
+            //}
+
             var row = _mapper.Map<RowModel>(rowModel);
+            row.Id = Guid.NewGuid().ToString();
 
-           
-           row.Id = new IDgenerate().GenvetId("Row", '-', 10, 4, 3); // استخدم IDgenerate هنا كما هو في الموديل.
+            var createdRow = await _repository.CreateAsync(row);
+            if (createdRow == null)
+            {
+                return BadRequest("فشل في إنشاء الصف.");
+            }
 
-
-            await _repository.CreateAsync(row);
-            return CreatedAtAction(nameof(GetById), new { id = row.Id }, rowModel);
+            return CreatedAtAction(nameof(GetById), new { id = createdRow.Id }, rowModel);
         }
 
         // PUT: /RowModel/{id}
