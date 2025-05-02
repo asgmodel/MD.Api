@@ -29,7 +29,9 @@ public static class InstallServ
             //CreateMap<UpdateSchoolVM, SchoolModel>().ReverseMap();
 
             CreateMap<StudentVM, StudentModel>().ReverseMap();
+            CreateMap<CreateTeacherVM, TeacherModel>().ReverseMap();
 
+            CreateMap<TeacherVM, TeacherModel>().ReverseMap();
 
             CreateMap<NameModel, NameVM>().ReverseMap();
             
@@ -41,11 +43,17 @@ public static class InstallServ
 
             // Row
             CreateMap<RowModel, RowVM>().ReverseMap();
-            CreateMap<RowModel, CreateRowVM>().ReverseMap();
 
+            CreateMap<RowModel, RowVM>().ReverseMap();
+            CreateMap<RowModel, CreateRowVM>().ReverseMap();
+            
 
             // Modul
             CreateMap<ModulModel, ModulVM>().ReverseMap();
+            CreateMap<CreateModulVM, ModulModel>().ReverseMap();
+
+
+
 
 
             // Teacher
@@ -63,6 +71,8 @@ public static class InstallServ
         services.AddScoped<ISchoolRepository, SchoolRepository>();
 
         services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IModulRepository, ModulRepository>();
 
         services.AddAutoMapper(typeof(CifegMapper));
     }

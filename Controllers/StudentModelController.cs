@@ -298,6 +298,7 @@ using Api.SM.Repository;
 using Api.SM.VM;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.SM.Controllers
 {
@@ -306,20 +307,16 @@ namespace Api.SM.Controllers
     public class StudentController : ControllerBase
     {
         private readonly IStudentRepository _repository;
-        private readonly IStudentRepository _studentRepository;
-        private readonly INameRepository _nameRepository;
-        private readonly IRowRepository _rowRepository;
+       
         private readonly IMapper _mapper;
 
         // Constructor to inject dependencies
         public StudentController(IStudentRepository repository,
-                                      INameRepository nameRepository,
-                                      IRowRepository rowRepository,
+                                      
                                       IMapper mapper)
         {
             _repository = repository;
-            _nameRepository = nameRepository;
-            _rowRepository = rowRepository;
+           
             _mapper = mapper;
         }
         [HttpGet]
@@ -360,12 +357,9 @@ namespace Api.SM.Controllers
 
             if (createdStudent == null)
             {
-                //// تحقق إضافي: أي سبب من الأسباب الثلاثة يمكن أن يكون السبب
-                //var name = await _nameRepository.GetByIdAsync();
-                //if (name == null)
-                //    return BadRequest("الاسم غير موجود.");
+                
 
-                var row = await _rowRepository.GetByIdAsync(studentVM.RowId);
+                var row = await _repository.GetByIdAsync(studentVM.RowId);
                 if (row == null)
                     return BadRequest("الصف غير موجود.");
 
@@ -374,22 +368,23 @@ namespace Api.SM.Controllers
 
                // return BadRequest("حدث خطأ أثناء إنشاء الطالب.");
             }
-
+          
             var studentViewModel = _mapper.Map<StudentVM>(createdStudent);
             return Ok(studentViewModel);
         }
 
         // GET: api/Student/{id}
+        
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetCardById(string id)
         {
             var student = await _repository.GetByIdAsync(id);
             if (student == null)
                 return NotFound("الطالب غير موجود.");
 
-            return Ok(_mapper.Map<StudentVM>(student));
+            var studentVM = _mapper.Map<StudentVM>(student); // Correct Mapping
+            return Ok(studentVM);
         }
-
         // PUT: api/Student/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] CreateStudentVM vm)
@@ -401,10 +396,23 @@ namespace Api.SM.Controllers
             if (existing == null)
                 return NotFound("الطالب غير موجود.");
 
-            _mapper.Map(vm, existing);
-            var updated = await _repository.UpdateAsync(existing);
-            return Ok(_mapper.Map<StudentVM>(updated));
+            // ✅ تحديث الخصائص مباشرة بدون استبدال الكائنات
+            existing.RowId = vm.RowId;
+            existing.SchoolId = vm.SchoolId;
+            existing.Age = vm.Age ?? existing.Age;
+
+            // ✅ تأكد من أن NameModel يتم تحديثه وليس استبداله (لتفادي التكرار)
+            if (existing.Name != null && vm.Name != null)
+            {
+                existing.Name.Name = vm.Name.Name;
+                existing.Name.Title = vm.Name.Title;
+            }
+
+            await _repository.UpdateAsync(existing);
+            return Ok("تم التحديث بنجاح.");
         }
+
+
 
         // DELETE: api/Student/{id}
         [HttpDelete("{id}")]
@@ -413,7 +421,7 @@ namespace Api.SM.Controllers
             var deleted = await _repository.DeleteAsync(id);
             if (!deleted)
                 return NotFound("الطالب غير موجود.");
-
+            await _repository.DeleteAsync(id);
             return Ok("تم الحذف بنجاح.");
         }
 
@@ -424,8 +432,8 @@ namespace Api.SM.Controllers
             var row = await _repository.GetRowAsync(id);
             if (row == null)
                 return NotFound("الصف غير موجود.");
-
-            return Ok(row);
+            var rowVm = _mapper.Map<StudentVM>(row); // Correct Mapping
+            return Ok(rowVm);
         }
 
         // GET: api/Student/{id}/moduls
@@ -451,8 +459,25 @@ namespace Api.SM.Controllers
             var result = await _repository.UpdateCardAsync(id, newCard);
             if (!result)
                 return BadRequest("لم يتم تحديث البطاقة. تحقق من الطالب.");
-
+          
+        
             return Ok("تم تحديث البطاقة بنجاح.");
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return BadRequest("يرجى إدخال كلمة للبحث.");
+
+            var students = await _repository.SearchAsync(keyword);
+
+            if (!students.Any())
+                return NotFound("لا توجد نتائج.");
+
+            var studentVMs = _mapper.Map<IEnumerable<StudentVM>>(students);
+            return Ok(studentVMs);
+        }
+
+
     }
 }

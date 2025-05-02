@@ -68,7 +68,10 @@ namespace Api.SM.Repository
             await _context.SaveChangesAsync();
             return item ==null?false:true;
         }
-
+        //public virtual T Serach(T item)
+        //{
+        //    return _dbSet.Find(i => i.Equals(item));
+        //}
         public virtual async Task<T?> FindAsync(params object[] ps)
         {
             return await _dbSet.FindAsync(ps);

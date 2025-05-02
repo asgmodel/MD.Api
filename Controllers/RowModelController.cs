@@ -122,17 +122,17 @@ namespace MD.Api.Controllers
             var rowModels = await _repository.GetAllAsync();
             return Ok(rowModels);
         }
-
+       
         // GET: /RowModel/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var rowModel = await _repository.GetByIdAsync(id);
-            if (rowModel == null)
-            {
-                return NotFound();
-            }
-            return Ok(rowModel);
+            var row = await _repository.GetByIdAsync(id);
+            if (row == null)
+                return NotFound("صف غير موجود.");
+
+            var rowVM = _mapper.Map<RowVM>(row); // Correct Mapping
+            return Ok(rowVM);
         }
 
         //// POST: /RowModel
@@ -222,5 +222,20 @@ namespace MD.Api.Controllers
             await _repository.DeleteAsync(id);
             return NoContent();
         }
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return BadRequest("يرجى إدخال كلمة للبحث.");
+
+            var row = await _repository.GetRowNameByIdAsync(keyword);
+
+            if (row == null )
+                return NotFound("لا توجد نتائج.");
+
+            var rowtVMs = _mapper.Map<IEnumerable<RowVM>>(row);
+            return Ok(rowtVMs);
+        }
+
     }
 }

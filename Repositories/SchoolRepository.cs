@@ -159,7 +159,7 @@ public interface ISchoolRepository : IRepsitory<SchoolModel>
     Task AddRowAsync(string rowId, string schoolId);
     Task<IEnumerable<RowModel>> GetRowsBySchoolIdAsync(string schoolId);
     Task AddStudent(string studentid, string schoolId);
-
+    Task<CardModel> IssuingCardStudent(CardModel card);
     //Task<CardModel> IssuingCardStudent(CardModel card);
 
 }
@@ -216,27 +216,7 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
         await UpdateAsync(school);
     }
 
-    //public async Task AddStudent(StudentModel student, string rowId)
-    //{
-
-    //    var row = await _rowRepository.GetByIdAsync(rowId);
-
-    //    if (row == null)
-    //    {
-    //        throw new Exception("Row not found");
-    //    }
-    //    if (Validator.Validate(row.Students, student))
-    //    {
-
-    //        student.Row = row;
-    //        student.RowId = row.Id;
-    //        //student.Name = student.Card.Name.FullName;
-    //        _rowRepository.AddStudent(rowId, student);
-
-    //        // _studentRepository.Add(student);
-    //        // row.Students.Add(student);
-    //    }
-    //}
+    
 
     public async Task<IEnumerable<RowModel>> GetRowsBySchoolIdAsync(string schoolId)
     {

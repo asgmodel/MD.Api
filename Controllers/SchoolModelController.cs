@@ -251,5 +251,19 @@ namespace MD.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        // POST: api/Card/issue
+        [HttpPost("issue")]
+        public async Task<IActionResult> IssueCard([FromBody] CardModel card)
+        {
+            if (card == null)
+                return BadRequest("البيانات غير صالحة");
+
+            var result = await _repository.IssuingCardStudent(card);
+
+            if (result == null)
+                return BadRequest("فشل في إصدار البطاقة: تحقق من تطابق الصف والمدرسة");
+
+            return Ok(result);
+        }
     }
 }

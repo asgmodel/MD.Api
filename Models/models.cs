@@ -308,7 +308,16 @@ namespace Api.SM.Models
         public string TeacherId { set; get; }
         public TeacherModel TeacherModel { set; get; }
     }
+    public class ModulTeacher
+    {
+        public string? Id { get; set; }
 
+        public string? ModelId { get; set; }
+        public ModulModel? ModelModuls { set; get; }
+
+        public string? TeacherId { set; get; }
+        public TeacherModel? TeacherModel { set; get; }
+    }
     public class TeacherModel
     {
         [Key]

@@ -139,18 +139,18 @@ namespace Api.SM.Controllers
         }
 
         // ✅ Create new card
-        //[HttpPost]
-        //public async Task<IActionResult> CreateCard([FromBody] CardVM createCardVM)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
+        [HttpPost]
+        public async Task<IActionResult> CreateCard([FromBody] CardVM createCardVM)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        //    var cardModel = _mapper.Map<CardModel>(createCardVM); // Map CreateCardVM -> CardModel
-        //    await _repository.CreateAsync(cardModel);
+            var cardModel = _mapper.Map<CardModel>(createCardVM); // Map CreateCardVM -> CardModel
+            await _repository.CreateAsync(cardModel);
 
-        //    var cardVM = _mapper.Map<CardVM>(cardModel); // Return the created card
-        //    return CreatedAtAction(nameof(GetCardById), new { id = cardModel.Id }, cardVM);
-        //}
+            var cardVM = _mapper.Map<CardVM>(cardModel); // Return the created card
+            return CreatedAtAction(nameof(GetCardById), new { id = cardModel.Id }, cardVM);
+        }
         //[HttpPost]
         //public async Task<IActionResult> Create([FromBody] CardVM vm)
         //{
