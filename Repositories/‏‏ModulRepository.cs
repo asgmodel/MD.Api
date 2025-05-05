@@ -56,7 +56,27 @@ public interface IModulRepository : IRepsitory<ModulModel>
 
 public class ModulRepository : Repository<ModulModel>, IModulRepository
 {
-    public ModulRepository(DataContext context) : base(context) { }
+    private readonly IRowRepository _rowRepository;
+
+    public ModulRepository(DataContext context, IRowRepository rowRepository) : base(context)
+    {
+        _rowRepository = rowRepository;
+    }
+    public override async Task<ModulModel?> CreateAsync(ModulModel entity)
+    {
+        if (string.IsNullOrWhiteSpace(entity.RowId))
+            return null;
+
+        var row = await _rowRepository.GetByIdAsync(entity.RowId);
+
+        // تحقق أن الصف موجود وأن لديه SchoolId صالح
+       // if (row == null || string.IsNullOrWhiteSpace(row.SchoolId))
+            if (row == null )
+
+                return null;
+
+        return await base.CreateAsync(entity);
+    }
 
     public async Task<ModulModel?> GetWithRelationsAsync(string id)
     {
@@ -65,6 +85,22 @@ public class ModulRepository : Repository<ModulModel>, IModulRepository
             .Include(m => m.Teachers)
             .Include(m => m.Students)
             .FirstOrDefaultAsync(m => m.Id == id);
+    }
+    //public override async Task<IEnumerable<ModulModel>?> GetAllAsync()
+    //{
+    //    return await _dbSet
+    //        .Include(s => s.Row.Moduls) // تضمين الكيان المرتبط
+    //        .ToListAsync();
+    //}
+
+    public override Task<ModulModel?> GetByIdAsync(string id)
+    {
+
+
+        return _dbSet.
+               Where(x => x.Id == id).
+               Include(p => p.Row).
+               FirstOrDefaultAsync();
     }
 }
 

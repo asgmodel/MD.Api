@@ -179,13 +179,16 @@ namespace MD.Api.Controllers
             var row = _mapper.Map<RowModel>(rowModel);
             row.Id = Guid.NewGuid().ToString();
 
+
             var createdRow = await _repository.CreateAsync(row);
             if (createdRow == null)
             {
                 return BadRequest("فشل في إنشاء الصف.");
             }
+            var rowVM = _mapper.Map<RowVM>(row); // Return the created card
 
-            return CreatedAtAction(nameof(GetById), new { id = createdRow.Id }, rowModel);
+
+            return CreatedAtAction(nameof(GetById), new { id = createdRow.Id }, rowVM);
         }
 
         // PUT: /RowModel/{id}

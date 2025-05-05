@@ -17,24 +17,28 @@ public static class InstallServ
             // .ForMember(dest => dest.SexType, opt => opt.MapFrom(src => src.SexType.HasValue ? src.SexType.ToString() : null));
 
 
-            //CreateMap<CreateNameVM, NameModel>();
-
+            CreateMap<CreateNameVM, NameModel>().ReverseMap();
+            CreateMap<NameModel, NameVM>().ReverseMap();
+            CreateMap<CreateStudentVM, StudentModel>().ReverseMap();
+            CreateMap<StudentModel, StudentVM>().ReverseMap();
+            CreateMap<StudentVM, StudentModel>().ReverseMap();
+            CreateMap<CreateTeacherVM, TeacherModel>().ReverseMap();
+            CreateMap<TeacherVM, TeacherModel>().ReverseMap();
+            CreateMap<ModulsTeacherVM, ModulsTeacher>().ReverseMap();
+            CreateMap<SchoolTeacherVM, SchoolTeacher>().ReverseMap();
+            CreateMap<CreateSchoolTeacherVM, SchoolTeacher>().ReverseMap();
+            
             //CreateMap<UpdateNameVM, NameModel>();
             //CreateMap<CreateRowVM, RowModel>().ReverseMap();
             //CreateMap<UpdateRowVM, RowModel>().ReverseMap();
             ////CreateMap<RowModel, UpdateRowVM>();
-            CreateMap<CreateStudentVM, StudentModel>().ReverseMap();
 
             //CreateMap<CreateSchoolVM, SchoolModel>().ReverseMap();
             //CreateMap<UpdateSchoolVM, SchoolModel>().ReverseMap();
 
-            CreateMap<StudentVM, StudentModel>().ReverseMap();
-            CreateMap<CreateTeacherVM, TeacherModel>().ReverseMap();
 
-            CreateMap<TeacherVM, TeacherModel>().ReverseMap();
 
-            CreateMap<NameModel, NameVM>().ReverseMap();
-            
+
             // Card
             CreateMap<CardModel, CardVM>().ReverseMap();
 
@@ -51,6 +55,7 @@ public static class InstallServ
             // Modul
             CreateMap<ModulModel, ModulVM>().ReverseMap();
             CreateMap<CreateModulVM, ModulModel>().ReverseMap();
+            CreateMap<ModulVM, ModulModel>().ReverseMap();
 
 
 
@@ -72,6 +77,8 @@ public static class InstallServ
 
         services.AddScoped<IStudentRepository, StudentRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IModulRepository, ModulRepository>();
+        services.AddScoped<ISchoolTeacherRepository, SchoolTeacherRepository>();
         services.AddScoped<IModulRepository, ModulRepository>();
 
         services.AddAutoMapper(typeof(CifegMapper));

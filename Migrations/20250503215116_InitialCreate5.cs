@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MD.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate4 : Migration
+    public partial class InitialCreate5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -54,23 +54,6 @@ namespace MD.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TeacherModel",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    NameId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeacherModel", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TeacherModel_NameModels_NameId",
-                        column: x => x.NameId,
-                        principalTable: "NameModels",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RowModels",
                 columns: table => new
                 {
@@ -89,27 +72,26 @@ namespace MD.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SchoolModelTeacherModel",
+                name: "TeacherModels",
                 columns: table => new
                 {
-                    SchoolModelsId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TeachersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    NameId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    SchoolModelId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SchoolModelTeacherModel", x => new { x.SchoolModelsId, x.TeachersId });
+                    table.PrimaryKey("PK_TeacherModels", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SchoolModelTeacherModel_SchoolModel_SchoolModelsId",
-                        column: x => x.SchoolModelsId,
+                        name: "FK_TeacherModels_NameModels_NameId",
+                        column: x => x.NameId,
+                        principalTable: "NameModels",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TeacherModels_SchoolModel_SchoolModelId",
+                        column: x => x.SchoolModelId,
                         principalTable: "SchoolModel",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SchoolModelTeacherModel_TeacherModel_TeachersId",
-                        column: x => x.TeachersId,
-                        principalTable: "TeacherModel",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -135,30 +117,6 @@ namespace MD.Api.Migrations
                         column: x => x.SchoolModelId,
                         principalTable: "SchoolModel",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "RowModelTeacherModel",
-                columns: table => new
-                {
-                    RowsId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TeachersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RowModelTeacherModel", x => new { x.RowsId, x.TeachersId });
-                    table.ForeignKey(
-                        name: "FK_RowModelTeacherModel_RowModels_RowsId",
-                        column: x => x.RowsId,
-                        principalTable: "RowModels",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RowModelTeacherModel_TeacherModel_TeachersId",
-                        column: x => x.TeachersId,
-                        principalTable: "TeacherModel",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,6 +157,56 @@ namespace MD.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RowModelTeacherModel",
+                columns: table => new
+                {
+                    RowsId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TeachersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RowModelTeacherModel", x => new { x.RowsId, x.TeachersId });
+                    table.ForeignKey(
+                        name: "FK_RowModelTeacherModel_RowModels_RowsId",
+                        column: x => x.RowsId,
+                        principalTable: "RowModels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RowModelTeacherModel_TeacherModels_TeachersId",
+                        column: x => x.TeachersId,
+                        principalTable: "TeacherModels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SchoolTeachers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SchoolId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SchoolModelId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TeacherId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TeacherModelId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SchoolTeachers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SchoolTeachers_SchoolModel_SchoolModelId",
+                        column: x => x.SchoolModelId,
+                        principalTable: "SchoolModel",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SchoolTeachers_TeacherModels_TeacherModelId",
+                        column: x => x.TeacherModelId,
+                        principalTable: "TeacherModels",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ModulModelTeacherModel",
                 columns: table => new
                 {
@@ -215,11 +223,36 @@ namespace MD.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ModulModelTeacherModel_TeacherModel_TeachersId",
+                        name: "FK_ModulModelTeacherModel_TeacherModels_TeachersId",
                         column: x => x.TeachersId,
-                        principalTable: "TeacherModel",
+                        principalTable: "TeacherModels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ModulsTeachers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ModelId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ModelModulsId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TeacherId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TeacherModelId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ModulsTeachers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ModulsTeachers_ModulModel_ModelModulsId",
+                        column: x => x.ModelModulsId,
+                        principalTable: "ModulModel",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ModulsTeachers_TeacherModels_TeacherModelId",
+                        column: x => x.TeacherModelId,
+                        principalTable: "TeacherModels",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -263,9 +296,9 @@ namespace MD.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StudentModelTeacherModel_TeacherModel_TeachersId",
+                        name: "FK_StudentModelTeacherModel_TeacherModels_TeachersId",
                         column: x => x.TeachersId,
-                        principalTable: "TeacherModel",
+                        principalTable: "TeacherModels",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -291,6 +324,16 @@ namespace MD.Api.Migrations
                 column: "TeachersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ModulsTeachers_ModelModulsId",
+                table: "ModulsTeachers",
+                column: "ModelModulsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ModulsTeachers_TeacherModelId",
+                table: "ModulsTeachers",
+                column: "TeacherModelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RowModels_SchoolId",
                 table: "RowModels",
                 column: "SchoolId");
@@ -301,9 +344,14 @@ namespace MD.Api.Migrations
                 column: "TeachersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SchoolModelTeacherModel_TeachersId",
-                table: "SchoolModelTeacherModel",
-                column: "TeachersId");
+                name: "IX_SchoolTeachers_SchoolModelId",
+                table: "SchoolTeachers",
+                column: "SchoolModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SchoolTeachers_TeacherModelId",
+                table: "SchoolTeachers",
+                column: "TeacherModelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentModel_CardId",
@@ -331,9 +379,14 @@ namespace MD.Api.Migrations
                 column: "TeachersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeacherModel_NameId",
-                table: "TeacherModel",
+                name: "IX_TeacherModels_NameId",
+                table: "TeacherModels",
                 column: "NameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeacherModels_SchoolModelId",
+                table: "TeacherModels",
+                column: "SchoolModelId");
         }
 
         /// <inheritdoc />
@@ -346,10 +399,13 @@ namespace MD.Api.Migrations
                 name: "ModulModelTeacherModel");
 
             migrationBuilder.DropTable(
+                name: "ModulsTeachers");
+
+            migrationBuilder.DropTable(
                 name: "RowModelTeacherModel");
 
             migrationBuilder.DropTable(
-                name: "SchoolModelTeacherModel");
+                name: "SchoolTeachers");
 
             migrationBuilder.DropTable(
                 name: "StudentModelTeacherModel");
@@ -361,7 +417,7 @@ namespace MD.Api.Migrations
                 name: "StudentModel");
 
             migrationBuilder.DropTable(
-                name: "TeacherModel");
+                name: "TeacherModels");
 
             migrationBuilder.DropTable(
                 name: "CardModels");

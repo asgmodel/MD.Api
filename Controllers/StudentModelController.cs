@@ -347,7 +347,7 @@ namespace Api.SM.Controllers
         //    return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         //}
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateStudentVM studentVM)
+        public async Task<ActionResult<CreateStudentVM>> Create([FromBody] CreateStudentVM studentVM)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -376,7 +376,7 @@ namespace Api.SM.Controllers
         // GET: api/Student/{id}
         
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCardById(string id)
+        public async Task<ActionResult<StudentVM>> GetCardById(string id)
         {
             var student = await _repository.GetByIdAsync(id);
             if (student == null)
@@ -387,7 +387,7 @@ namespace Api.SM.Controllers
         }
         // PUT: api/Student/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] CreateStudentVM vm)
+        public async Task<ActionResult<CreateStudentVM>> Update(string id, [FromBody] CreateStudentVM vm)
         {
             if (!ModelState.IsValid || vm == null)
                 return BadRequest("البيانات غير صالحة.");
@@ -396,20 +396,27 @@ namespace Api.SM.Controllers
             if (existing == null)
                 return NotFound("الطالب غير موجود.");
 
-            // ✅ تحديث الخصائص مباشرة بدون استبدال الكائنات
-            existing.RowId = vm.RowId;
-            existing.SchoolId = vm.SchoolId;
-            existing.Age = vm.Age ?? existing.Age;
+            //// ✅ تحديث الخصائص مباشرة بدون استبدال الكائنات
+            //existing.RowId = vm.RowId;
+            //existing.SchoolId = vm.SchoolId;
+            //existing.Age = vm.Age ?? existing.Age;
 
-            // ✅ تأكد من أن NameModel يتم تحديثه وليس استبداله (لتفادي التكرار)
-            if (existing.Name != null && vm.Name != null)
+            //// ✅ تأكد من أن NameModel يتم تحديثه وليس استبداله (لتفادي التكرار)
+            //if (existing.Name != null && vm.Name != null)
+            //{
+            //    existing.Name.Name = vm.Name.Name;
+            //    existing.Name.Title = vm.Name.Title;
+            //}
+            var student = _mapper.Map<StudentModel>(vm);
+            student.Id = id;
+
+           var item = await _repository.UpdateAsync(existing);
+            if(item !=null)
             {
-                existing.Name.Name = vm.Name.Name;
-                existing.Name.Title = vm.Name.Title;
+                var vmstu = _mapper.Map<CreateStudentVM>(item);
+                return Ok(vmstu);
             }
-
-            await _repository.UpdateAsync(existing);
-            return Ok("تم التحديث بنجاح.");
+            return BadRequest("تم التحديث بنجاح.");
         }
 
 
@@ -421,8 +428,10 @@ namespace Api.SM.Controllers
             var deleted = await _repository.DeleteAsync(id);
             if (!deleted)
                 return NotFound("الطالب غير موجود.");
-            await _repository.DeleteAsync(id);
+          var Isdle=  await _repository.DeleteAsync(id);
+            if(!Isdle)
             return Ok("تم الحذف بنجاح.");
+            return BadRequest("Nou Delete ");
         }
 
         // GET: api/Student/{id}/row
@@ -432,7 +441,9 @@ namespace Api.SM.Controllers
             var row = await _repository.GetRowAsync(id);
             if (row == null)
                 return NotFound("الصف غير موجود.");
-            var rowVm = _mapper.Map<StudentVM>(row); // Correct Mapping
+            var rowVm = _mapper.Map<RowVM>(row); // Correct Mapping
+          // if(rowVm  !=null)
+
             return Ok(rowVm);
         }
 

@@ -27,8 +27,12 @@ public class DataContext :DbContext
     public DbSet<CardModel> CardModels { get; set; }
     public DbSet<SchoolModel> Schools { get; set; }
     public DbSet<ModulModel> Moduls { get; set; }
-    public DbSet<TeacherModel> Teachers { get; set; }
+   // public DbSet<TeacherModel> Teachers { get; set; }
     public DbSet<StudentModel> Students { get; set; }
-    // You can add any custom functions for DbContext here
-}
+    public DbSet<ModulsTeacher> ModulsTeachers { get; set; }
+    public DbSet<SchoolTeacher> SchoolTeachers { get; set; }
+
+        // You can add any custom functions for DbContext here
+    }
+
 }

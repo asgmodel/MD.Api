@@ -93,12 +93,16 @@ public enum SexTypeVM
     Male,
     Famle,
 }
-
-public class NameVM
+public class CreateNameVM
 {
-    public string Id { get; set; }
     public string Name { get; set; }
     public string Title { get; set; }
+}
+public class NameVM
+{
+   public string Id { get; set; }
+    public string? Name { get; set; }
+    public string? Title { get; set; }
     public string FullName => $"{Name} {Title}";
 }
 
@@ -159,7 +163,7 @@ public class RowVM
 public class CreateStudentVM
 {
  
-    public NameModel? Name { get; set; }
+    public CreateNameVM? Name { get; set; }
     public string? RowId { get; set; }
     public string? SchoolId { get; set; }
     public int? Age { get; set; } // نفترض أن الكارت موجود
@@ -184,18 +188,20 @@ public class StudentVM
 //    public string RowId { get; set; }
 //    public string RowName { get; set; }
 //}
-public class CreateTeacherVM
-{
-    public NameVM? Name { get; set; }
-    public string? RowId { get; set; }
-  //  public List<ModulVM>? ModulIds { get; set; }
-   // public List<StudentVM>? StudentIds { get; set; }
-    public string? SchoolId { get; set; }
-}
+//public class CreateTeacherVM
+//{
+//    public NameVM? Name { get; set; }
+//    public string? ModulId { get; set; }
+//  //  public List<ModulVM>? ModulIds { get; set; }
+//   // public List<StudentVM>? StudentIds { get; set; }
+//    public string? SchoolId { get; set; }
+//}
 
 public class TeacherVM
 {
     public string Id { get; set; }
+
+    public string? NameId { get; set; }
     public NameVM? Name { get; set; }
 
     public List<RowVM> Rows { get; set; } = new();
@@ -205,9 +211,9 @@ public class TeacherVM
 }
 public class CreateModulVM
 {
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public string RowId { get; set; }
-    public string? TeacherId { get; set; }
+   // public string? TeacherId { get; set; }
 }
 
 public class ModulVM
@@ -215,7 +221,51 @@ public class ModulVM
     public string Id { get; set; }
     public string Name { get; set; }
     public string RowId { get; set; }
-    public RowVM? Row { get; set; }
-    public List<TeacherVM> Teachers { get; set; } = new();
-    public List<StudentVM> Students { get; set; } = new();
+  //  public RowVM? Row { get; set; }
+   // public List<TeacherVM> Teachers { get; set; } = new();
+   // public List<StudentVM> Students { get; set; } = new();
+  //  public ICollection<SchoolTeacherVM> SchoolModels { get; set; } = new List<SchoolTeacherVM>();
+    //public ICollection<ModulsTeacherVM> ModulsTeachers { get; set; } = new List<ModulsTeacherVM>();
+}
+
+public class CreateTeacherVM
+{
+    public CreateNameVM? Name { get; set; }
+    public string? SchoolId { get; set; }
+    public string? ModelId { get; set; }
+
+    // public ICollection<SchoolTeacherVM> SchoolModels { get; set; } = new List<SchoolTeacherVM>();
+    //public ICollection<ModulsTeacherVM> ModulsTeachers { get; set; } = new List<ModulsTeacherVM>();
+    //public ICollection<SchoolVM> SchoolModels { get; set; } = new List<SchoolVM>();
+    // public ICollection<CreateModulVM> ModulsTeachers { get; set; } = new List<CreateModulVM>();
+
+
+}
+
+public class ModulsTeacherVM
+{
+    public string? Id { get; set; }
+
+    public string? ModelId { get; set; }
+    public ModulVM? ModulsVM { set; get; }
+
+    public string? TeacherId { set; get; }
+    public TeacherVM? TeacherVM { set; get; }
+}
+
+public class SchoolTeacherVM
+{
+    public string? Id { get; set; }
+
+    public string? SchoolId { get; set; }
+    public SchoolVM SchoolVM { set; get; }
+
+    public string TeacherId { set; get; }
+    public TeacherVM? TeacherVM { set; get; }
+}
+
+public class CreateSchoolTeacherVM
+{
+    public string SchoolId { get; set; }
+    public string TeacherId { get; set; }
 }

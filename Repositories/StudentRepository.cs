@@ -315,22 +315,13 @@ namespace Api.SM.Repository
             var row = await _rowRepository.GetByIdAsync(entity.RowId);
             if (row == null || row.SchoolId != entity.SchoolId)
                 return null;
-            bool exists = await _dbSet.AnyAsync(s =>
-        s.Name == entity.Name
-    );
+            bool exists = await _dbSet.AnyAsync(s => s.Name.Id == entity.Name.Id );
             if (exists)
                 return null;
-            //throw new InvalidOperationException("هذا الطالب مسجل مسبقاً في نفس الصف والمدرسة.");
 
             return await base.CreateAsync(entity);
         }
-        //        {
-        //  "id": "string",
-        //  "nameId": "719926b4-5527-405d-a634-66db5c910a45",
-        //  "rowId": "98abc337-0056-47cb-8ad0-c761f6636723",
-        //  "schoolId": "19dddea1-d447-4277-aec9-bf92615b4a52",
-        //  "age": 0
-        //}
+      
         public async Task<IEnumerable<StudentModel>> SearchByNameAsync(string name)
         {
             return await _dbSet
@@ -355,6 +346,7 @@ namespace Api.SM.Repository
             var student = await _dbSet
                 .Include(s => s.Row)
                 .FirstOrDefaultAsync(s => s.Id == studentId);
+
 
             return student?.Row;
         }

@@ -219,7 +219,7 @@ namespace Api.SM.Models
     public class NameModel
     {
         [Key]
-        public string Id { get; set; } //= Guid.NewGuid().ToString();// توليد مفتاح فريد
+        public string Id { get; set; } = Guid.NewGuid().ToString();// توليد مفتاح فريد
         public string Name { get; set; }
         public string Title { get; set; }
         public string FullName => $"{Name} {Title}";
@@ -300,17 +300,21 @@ namespace Api.SM.Models
 
     public class SchoolTeacher
     {
-        public string? Id { get; set; }
+        [Key]
+        public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
 
-        public string? SchoolId { get; set; }
+        // public string? SchoolId { get; set; }
+        public string? SchoolModelId { get; set; }
         public SchoolModel SchoolModel { set; get; }
+        //  public string TeacherId { set; get; }
 
-        public string TeacherId { set; get; }
+         public string TeacherModelId { set; get; }
         public TeacherModel TeacherModel { set; get; }
     }
-    public class ModulTeacher
+    public class ModulsTeacher
     {
-        public string? Id { get; set; }
+        [Key]
+        public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
 
         public string? ModelId { get; set; }
         public ModulModel? ModelModuls { set; get; }
@@ -325,10 +329,10 @@ namespace Api.SM.Models
         
         public string? NameId { get; set; }
         public NameModel? Name { get; set; }
-     
-
         public ICollection<RowModel>? Rows { get; set; }
         public ICollection<SchoolTeacher> SchoolModels { get; set; } = new List<SchoolTeacher>();
+
+        public ICollection<ModulsTeacher> ModulsTeachers { get; set; } = new List<ModulsTeacher>();
         public ICollection<ModulModel> Moduls { get; set; } = new List<ModulModel>();
         public ICollection<StudentModel> Students { get; set; } = new List<StudentModel>();
     }

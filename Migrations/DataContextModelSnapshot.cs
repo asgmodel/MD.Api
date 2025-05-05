@@ -75,6 +75,32 @@ namespace MD.Api.Migrations
                     b.ToTable("ModulModel");
                 });
 
+            modelBuilder.Entity("Api.SM.Models.ModulsTeacher", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ModelId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModelModulsId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TeacherId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeacherModelId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModelModulsId");
+
+                    b.HasIndex("TeacherModelId");
+
+                    b.ToTable("ModulsTeachers");
+                });
+
             modelBuilder.Entity("Api.SM.Models.NameModel", b =>
                 {
                     b.Property<string>("Id")
@@ -126,6 +152,34 @@ namespace MD.Api.Migrations
                     b.ToTable("SchoolModel");
                 });
 
+            modelBuilder.Entity("Api.SM.Models.SchoolTeacher", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SchoolId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SchoolModelId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TeacherId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TeacherModelId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SchoolModelId");
+
+                    b.HasIndex("TeacherModelId");
+
+                    b.ToTable("SchoolTeachers");
+                });
+
             modelBuilder.Entity("Api.SM.Models.StudentModel", b =>
                 {
                     b.Property<string>("Id")
@@ -170,11 +224,16 @@ namespace MD.Api.Migrations
                     b.Property<string>("NameId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("SchoolModelId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NameId");
 
-                    b.ToTable("TeacherModel");
+                    b.HasIndex("SchoolModelId");
+
+                    b.ToTable("TeacherModels");
                 });
 
             modelBuilder.Entity("ModulModelStudentModel", b =>
@@ -222,21 +281,6 @@ namespace MD.Api.Migrations
                     b.ToTable("RowModelTeacherModel");
                 });
 
-            modelBuilder.Entity("SchoolModelTeacherModel", b =>
-                {
-                    b.Property<string>("SchoolModelsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TeachersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("SchoolModelsId", "TeachersId");
-
-                    b.HasIndex("TeachersId");
-
-                    b.ToTable("SchoolModelTeacherModel");
-                });
-
             modelBuilder.Entity("StudentModelTeacherModel", b =>
                 {
                     b.Property<string>("StudentsId")
@@ -267,6 +311,21 @@ namespace MD.Api.Migrations
                     b.Navigation("Row");
                 });
 
+            modelBuilder.Entity("Api.SM.Models.ModulsTeacher", b =>
+                {
+                    b.HasOne("Api.SM.Models.ModulModel", "ModelModuls")
+                        .WithMany()
+                        .HasForeignKey("ModelModulsId");
+
+                    b.HasOne("Api.SM.Models.TeacherModel", "TeacherModel")
+                        .WithMany("ModulsTeachers")
+                        .HasForeignKey("TeacherModelId");
+
+                    b.Navigation("ModelModuls");
+
+                    b.Navigation("TeacherModel");
+                });
+
             modelBuilder.Entity("Api.SM.Models.RowModel", b =>
                 {
                     b.HasOne("Api.SM.Models.SchoolModel", "School")
@@ -274,6 +333,23 @@ namespace MD.Api.Migrations
                         .HasForeignKey("SchoolId");
 
                     b.Navigation("School");
+                });
+
+            modelBuilder.Entity("Api.SM.Models.SchoolTeacher", b =>
+                {
+                    b.HasOne("Api.SM.Models.SchoolModel", "SchoolModel")
+                        .WithMany()
+                        .HasForeignKey("SchoolModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Api.SM.Models.TeacherModel", "TeacherModel")
+                        .WithMany("SchoolModels")
+                        .HasForeignKey("TeacherModelId");
+
+                    b.Navigation("SchoolModel");
+
+                    b.Navigation("TeacherModel");
                 });
 
             modelBuilder.Entity("Api.SM.Models.StudentModel", b =>
@@ -308,6 +384,10 @@ namespace MD.Api.Migrations
                     b.HasOne("Api.SM.Models.NameModel", "Name")
                         .WithMany()
                         .HasForeignKey("NameId");
+
+                    b.HasOne("Api.SM.Models.SchoolModel", null)
+                        .WithMany("Teachers")
+                        .HasForeignKey("SchoolModelId");
 
                     b.Navigation("Name");
                 });
@@ -357,21 +437,6 @@ namespace MD.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SchoolModelTeacherModel", b =>
-                {
-                    b.HasOne("Api.SM.Models.SchoolModel", null)
-                        .WithMany()
-                        .HasForeignKey("SchoolModelsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.SM.Models.TeacherModel", null)
-                        .WithMany()
-                        .HasForeignKey("TeachersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StudentModelTeacherModel", b =>
                 {
                     b.HasOne("Api.SM.Models.StudentModel", null)
@@ -401,6 +466,15 @@ namespace MD.Api.Migrations
                     b.Navigation("Rows");
 
                     b.Navigation("Students");
+
+                    b.Navigation("Teachers");
+                });
+
+            modelBuilder.Entity("Api.SM.Models.TeacherModel", b =>
+                {
+                    b.Navigation("ModulsTeachers");
+
+                    b.Navigation("SchoolModels");
                 });
 #pragma warning restore 612, 618
         }
