@@ -298,28 +298,42 @@ namespace Api.SM.Models
         public ICollection<TeacherModel> Teachers { get; set; } = new List<TeacherModel>();
     }
 
+    //public class SchoolTeacher
+    //{
+    //    [Key]
+    //    public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
+
+    //    // public string? SchoolId { get; set; }
+    //    public string? SchoolModelId { get; set; }
+    //    public SchoolModel SchoolModel { set; get; }
+    //    //  public string TeacherId { set; get; }
+
+    //     public string TeacherModelId { set; get; }
+    //    public TeacherModel TeacherModel { set; get; }
+    //}
     public class SchoolTeacher
     {
         [Key]
-        public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
-        // public string? SchoolId { get; set; }
         public string? SchoolModelId { get; set; }
-        public SchoolModel SchoolModel { set; get; }
-        //  public string TeacherId { set; get; }
 
-         public string TeacherModelId { set; get; }
-        public TeacherModel TeacherModel { set; get; }
+        public SchoolModel? SchoolModel { get; set; }
+
+        public string? TeacherModelId { get; set; }
+
+        public TeacherModel? TeacherModel { get; set; }
     }
+
     public class ModulsTeacher
     {
         [Key]
         public string? Id { get; set; } = Guid.NewGuid().ToString(); // توليد ID تلقائي
 
-        public string? ModelId { get; set; }
+        public string? ModelModulslId { get; set; }
         public ModulModel? ModelModuls { set; get; }
 
-        public string? TeacherId { set; get; }
+        public string? TeacherModelId { set; get; }
         public TeacherModel? TeacherModel { set; get; }
     }
     public class TeacherModel

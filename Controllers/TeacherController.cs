@@ -157,16 +157,16 @@ public class TeacherController : ControllerBase
         _mapper = mapper;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
+    [HttpGet("GetAllTeacher")]
+    public async Task<ActionResult<IEnumerable<TeacherVM>>> GetAllTeacher()
     {
         var teachers = await _repository.GetAllAsync();
         var teacherVMs = _mapper.Map<IEnumerable<TeacherVM>>(teachers);
         return Ok(teacherVMs);
     }
 
-    [HttpGet("by-id/{id}")]
-    public async Task<IActionResult> GetById(string id)
+    [HttpGet("GetTeacherById/{id}")]
+    public async Task<IActionResult> GetTeacherById(string id)
     {
         var teacher = await _repository.GetByIdAsync(id);
         if (teacher == null)
@@ -175,6 +175,63 @@ public class TeacherController : ControllerBase
         var teacherVM = _mapper.Map<TeacherVM>(teacher);
         return Ok(teacherVM);
     }
+    [HttpPost("CreateTeacher")]
+    public async Task<ActionResult<CreateTeacherVM>> CreateTeacher([FromBody] CreateTeacherVM teacherVM)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var teacher = _mapper.Map<TeacherModel>(teacherVM);
+        var createdteacher = await _repository.CreateAsync(teacher);
+
+        if (createdteacher == null)
+        {
+
+
+            var school = await _repository.GetByIdAsync(teacherVM.SchoolId);
+            if (school == null)
+                return BadRequest("المدرسة غير موجوده.");
+
+            // return BadRequest("حدث خطأ أثناء إنشاء الطالب.");
+        }
+
+        var teachertViewModel = _mapper.Map<TeacherVM>(createdteacher);
+        return Ok(teachertViewModel);
+    }
+    [HttpPut("Updateteacher/{id}")]
+    public async Task<ActionResult<CreateTeacherVM>> Updateteacher(string id, [FromBody] CreateTeacherVM vm)
+    {
+        if (!ModelState.IsValid || vm == null)
+            return BadRequest("البيانات غير صالحة.");
+
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing == null)
+            return NotFound("المعلم غير موجود.");
+
+    
+        var teacher = _mapper.Map<TeacherModel>(vm);
+        teacher.Id = id;
+
+        var item = await _repository.UpdateAsync(existing);
+        if (item != null)
+        {
+            var vmteacher = _mapper.Map<CreateTeacherVM>(item);
+            return Ok(vmteacher);
+        }
+        return BadRequest("تم التحديث بنجاح.");
+    }
+    [HttpDelete("Deleteteacher/{id}")]
+    public async Task<IActionResult> Deleteteacher(string id)
+    {
+        var deleted = await _repository.DeleteAsync(id);
+        if (!deleted)
+            return NotFound("المعلم غير موجود.");
+        var Isdle = await _repository.DeleteAsync(id);
+        if (!Isdle)
+            return Ok("تم الحذف بنجاح.");
+        return BadRequest("Nou Delete ");
+    }
+
 
     //[HttpPost]
     //public async Task<IActionResult> Create([FromBody] CreateTeacherVM vm)
@@ -182,35 +239,23 @@ public class TeacherController : ControllerBase
     //    if (!ModelState.IsValid)
     //        return BadRequest(ModelState);
 
+    //    // التحقق من وجود المدرسة
+    //    var school = await _repository.GetByIdAsync(vm.SchoolId);
+    //    if (school == null)
+    //        return BadRequest("المدرسة غير موجودة.");
 
-    //    // تحويل ViewModel إلى Model
+    //    // إنشاء TeacherModel من ViewModel
     //    var teacher = _mapper.Map<TeacherModel>(vm);
 
-    //    //// ربط المدارس بالمعلم إذا كان هناك بيانات المدارس
-    //    //if (!string.IsNullOrEmpty(vm.SchoolId)) // تحقق من وجود SchoolId
-    //    //{
-    //    //    teacher.SchoolModels = new List<SchoolTeacher>
-    //    //{
-    //    //    new SchoolTeacher
-    //    //    {
-    //    //        SchoolId = vm.SchoolId,
-    //    //        TeacherId = teacher.Id // Teacher ID from the newly created teacher
-    //    //    }
-    //    //};
-    //    //}
-
-    //    //// ربط المواد بالمعلم إذا كان هناك بيانات المواد
-    //    //if (!string.IsNullOrEmpty(vm.ModelId)) // تحقق من وجود ModelId
-    //    //{
-    //    //    teacher.ModulsTeachers = new List<ModulsTeacher>
-    //    //{
-    //    //    new ModulsTeacher
-    //    //    {
-    //    //        ModelId = vm.ModelId,
-    //    //        TeacherId = teacher.Id // Teacher ID from the newly created teacher
-    //    //    }
-    //    //};
-    //    //}
+    //    // ربط المعلم بالمدرسة عبر العلاقة SchoolTeacher
+    //    teacher.SchoolModels = new List<SchoolTeacher>
+    //{
+    //    new SchoolTeacher
+    //    {
+    //        SchoolId = vm.SchoolId,
+    //        TeacherModel = teacher
+    //    }
+    //};
 
     //    // إنشاء المعلم
     //    var createdTeacher = await _repository.CreateAsync(teacher);
@@ -218,43 +263,9 @@ public class TeacherController : ControllerBase
     //    if (createdTeacher == null)
     //        return BadRequest("فشل في إنشاء المعلم، تحقق من صحة البيانات.");
 
-    //    // تحويل الـ TeacherModel إلى TeacherVM بعد الإضافة
+    //    // تحويل الكائن الناتج إلى ViewModel
     //    var teacherVM = _mapper.Map<TeacherVM>(createdTeacher);
     //    return Ok(teacherVM);
     //}
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateTeacherVM vm)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        // التحقق من وجود المدرسة
-        var school = await _repository.GetByIdAsync(vm.SchoolId);
-        if (school == null)
-            return BadRequest("المدرسة غير موجودة.");
-
-        // إنشاء TeacherModel من ViewModel
-        var teacher = _mapper.Map<TeacherModel>(vm);
-
-        // ربط المعلم بالمدرسة عبر العلاقة SchoolTeacher
-        teacher.SchoolModels = new List<SchoolTeacher>
-    {
-        new SchoolTeacher
-        {
-            SchoolModelId = vm.SchoolId,
-            TeacherModel = teacher
-        }
-    };
-
-        // إنشاء المعلم
-        var createdTeacher = await _repository.CreateAsync(teacher);
-
-        if (createdTeacher == null)
-            return BadRequest("فشل في إنشاء المعلم، تحقق من صحة البيانات.");
-
-        // تحويل الكائن الناتج إلى ViewModel
-        var teacherVM = _mapper.Map<TeacherVM>(createdTeacher);
-        return Ok(teacherVM);
-    }
 
 }

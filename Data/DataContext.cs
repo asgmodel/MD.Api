@@ -31,7 +31,6 @@ public class DataContext :DbContext
     public DbSet<StudentModel> Students { get; set; }
     public DbSet<ModulsTeacher> ModulsTeachers { get; set; }
     public DbSet<SchoolTeacher> SchoolTeachers { get; set; }
-
         // You can add any custom functions for DbContext here
     }
 

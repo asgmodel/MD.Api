@@ -156,6 +156,8 @@ using Microsoft.EntityFrameworkCore;
 
 public interface ISchoolRepository : IRepsitory<SchoolModel>
 {
+    Task<bool> DeleteStudentAsync(string schoolId, string studentId);
+    Task<bool> DeleteRowsAsync(string rowId, string schoolId);
     Task AddRowAsync(string rowId, string schoolId);
     Task<IEnumerable<RowModel>> GetRowsBySchoolIdAsync(string schoolId);
     Task AddStudent(string studentid, string schoolId);
@@ -183,6 +185,25 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
     //{
     //    return await _dbSet.FirstOrDefaultAsync(s => s.Id == schoolId);
     //}
+    //public override  Task<SchoolModel?> CreateAsync(SchoolModel entity)
+    //{
+    //    bool isNameTaken = _dbSet.Any(s => s.Name == entity.Name);
+    //    if (isNameTaken)
+    //    {
+    //        return null;
+    //    }
+    //    return base.CreateAsync(entity);
+    //}
+    public override async Task<SchoolModel?> CreateAsync(SchoolModel entity)
+    {
+        bool isNameTaken = _dbSet.Any(s => s.Name == entity.Name);
+        if (isNameTaken)
+        {
+            throw new InvalidOperationException("School name already exists.");
+        }
+
+        return await base.CreateAsync(entity);
+    }
 
     public async Task AddRowAsync(string rowId, string schoolId)
     {
@@ -199,6 +220,49 @@ public class SchoolRepository : Repository<SchoolModel>, ISchoolRepository
         row.SchoolId = school.Id;
 
         await UpdateAsync(school);
+    }
+
+    public override async Task<bool> DeleteAsync(string schoolId)
+    {
+        var school = await _dbSet
+            .Include(s => s.Rows)
+            .Include(s => s.Students)
+            .Include(s => s.Teachers)
+            .Include(s => s.Moduls)
+            .FirstOrDefaultAsync(s => s.Id == schoolId);
+
+        if (school == null)
+        {
+            Console.WriteLine($"School with Id {schoolId} not found.");
+        }
+
+        // Õ–› «·⁄‰«’— «·„— »ÿ… √Ê·«
+        await _rowRepository.DeleteAsync(school.Id);
+        await _studentRepository.DeleteAsync(school.Id);
+       // await _teacherRepository.DeleteAsync(school.Id);
+      //  await _modulRepository.DeleteAsync(school.Id);
+
+        // Õ–› «·„œ—”…
+        await base.DeleteAsync(schoolId);
+
+        return true;
+    }
+    public async Task<bool> DeleteRowsAsync(string rowId, string schoolId)
+    {
+        var row = await _rowRepository.GetByIdAsync(rowId);
+        if (row == null || row.SchoolId != schoolId)
+            return false;
+
+        return await _rowRepository.DeleteAsync(rowId);
+    }
+
+    public async Task<bool> DeleteStudentAsync(string schoolId, string studentId)
+    {
+        var student = await _studentRepository.GetByIdAsync(studentId);
+        if (student == null || student.SchoolId != schoolId)
+            return false;
+
+        return await _studentRepository.DeleteAsync(studentId);
     }
 
     public async Task AddStudent(string studentId, string schoolId)

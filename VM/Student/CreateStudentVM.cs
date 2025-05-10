@@ -3,6 +3,7 @@ using Api.SM.Data;
 using Api.SM.Models;
 using Api.SM.VM;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 namespace Api.SM.VM;
 
 //public class CreateNameVM
@@ -86,7 +87,7 @@ namespace Api.SM.VM;
 //    public string Id { get; set; }
 //    public string Name { get; set; }
 //    // أي خصائص أخرى تحتاجها
-//}
+//}Required.AllowNull
 
 public enum SexTypeVM
 {
@@ -105,9 +106,10 @@ public class NameVM
     public string? Title { get; set; }
     public string FullName => $"{Name} {Title}";
 }
-
 public class CardVM
 {
+    public string? Id { get; set; }// = Guid.NewGuid().ToString();
+
     public DateTime Date { get; set; }
 
     public string? SchoolId { get; set; }
@@ -121,11 +123,34 @@ public class CardVM
     public string? Stage { get; set; }
 
 }
+public class CreateCardVM
+{
 
+    public DateTime Date { get; set; }
+
+    public string? SchoolId { get; set; }
+
+
+    public string? StudentId { get; set; }
+
+    public string? RowId { get; set; }
+
+    public string? Academic { get; set; } //
+    public string? Stage { get; set; }
+
+}
+public class CreateSchoolVM
+{
+    public string? Name { get; set; }
+}
 public class SchoolVM
 {
     public string Id { get; set; }
     public string Name { get; set; }
+    public ICollection<RowVM> Rows { get; set; } = new List<RowVM>();
+    public ICollection<ModulVM> Moduls { get; set; } = new List<ModulVM>();
+    public ICollection<TeacherVM> Teachers { get; set; } = new List<TeacherVM>();
+    public ICollection<StudentVM> StudentsVM { get; set; } = new List<StudentVM>();
 }
 public class CreateRowVM
 {
@@ -138,9 +163,8 @@ public class RowVM
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public string RowName { get; set; }
     public string? SchoolId { get; set; }
-    public SchoolVM? School { get; set; }
+    public CreateSchoolVM? School { get; set; }
     public ICollection<ModulVM> Moduls { get; set; } = new List<ModulVM>();
     public ICollection<TeacherVM> Teachers { get; set; } = new List<TeacherVM>();
     public ICollection<StudentVM> StudentsVM { get; set; } = new List<StudentVM>();
@@ -168,13 +192,16 @@ public class CreateStudentVM
     public string? SchoolId { get; set; }
     public int? Age { get; set; } // نفترض أن الكارت موجود
 }
+
 public class StudentVM
 {
     public string Id { get; set; }
     public string? RowId { get; set; }
     public NameVM? Name { get; set; }
+    public int? Age { get; set; } // نفترض أن الكارت موجود
+
     public RowVM? Row { get; set; }
-    public CardVM? Card { get; set; }
+    public CreateCardVM? Card { get; set; }
     public string? SchoolId { get; set; }
     public SchoolVM? School { get; set; }
     public ICollection<ModulVM> Moduls { get; set; } = new List<ModulVM>();
@@ -241,6 +268,11 @@ public class CreateTeacherVM
 
 
 }
+public class CreateModulsTeacherVM
+{
+    public string? ModelId { get; set; }
+    public string? TeacherId { get; set; }
+}
 
 public class ModulsTeacherVM
 {
@@ -266,6 +298,20 @@ public class SchoolTeacherVM
 
 public class CreateSchoolTeacherVM
 {
-    public string SchoolId { get; set; }
+
+    public string? SchoolModelId { get; set; }
+
+
     public string TeacherId { get; set; }
 }
+
+//public class CreateSchoolTeacherVM
+//{
+//    public string SchoolId { get; set; }
+//    public string TeacherId { get; set; }
+//}
+//public class CreateSchoolTeacherVM
+//{
+//    public string SchoolModelId { get; set; }   // ✅ ليس فقط SchoolId
+//    public string TeacherId { get; set; }
+//}

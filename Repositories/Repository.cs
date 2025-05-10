@@ -17,13 +17,13 @@ namespace Api.SM.Repository
     public abstract class Repository<T> : IRepsitory<T>
         where T : class
     {
-        private readonly DataContext _context;
+        private readonly DataContext context;
         protected readonly DbSet<T> _dbSet;
 
         public Repository(DataContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _dbSet = _context.Set<T>();
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            _dbSet = this.context.Set<T>();
         }
 
         public virtual async Task<IEnumerable<T>?> GetAllAsync()
@@ -48,14 +48,14 @@ namespace Api.SM.Repository
         {
 
             var item= await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return item.Entity;
         }
 
         public virtual async Task<T?> UpdateAsync(T entity)
         {
             var item= _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return item.Entity;
         }
 
@@ -65,7 +65,7 @@ namespace Api.SM.Repository
             if (entity == null) return false;
 
             var item= _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             return item ==null?false:true;
         }
         //public virtual T Serach(T item)

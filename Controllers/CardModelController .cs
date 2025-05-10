@@ -115,8 +115,8 @@ namespace Api.SM.Controllers
         }
 
         // ✅ Get all cards
-        [HttpGet]
-        public async Task<IActionResult> GetAllCards()
+        [HttpGet("GetAllCards")]
+        public async Task<ActionResult<IEnumerable<CardVM>>> GetAllCards()
         {
             var cards = await _repository.GetAllAsync();
             if (cards == null)
@@ -127,7 +127,7 @@ namespace Api.SM.Controllers
         }
      
         // ✅ Get card by ID
-        [HttpGet("{id}")]
+        [HttpGet("GetCardById/{id}")]
         public async Task<IActionResult> GetCardById(string id)
         {
             var card = await _repository.GetByIdAsync(id);
@@ -137,61 +137,60 @@ namespace Api.SM.Controllers
             var cardVM = _mapper.Map<CardVM>(card); // Correct Mapping
             return Ok(cardVM);
         }
-
-        // ✅ Create new card
-        [HttpPost]
-        public async Task<IActionResult> CreateCard([FromBody] CardVM createCardVM)
+        [HttpPost("CreateCard")]
+        public async Task<ActionResult<CreateCardVM>> CreateCard([FromBody] CreateCardVM cardVM)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
-            var cardModel = _mapper.Map<CardModel>(createCardVM); // Map CreateCardVM -> CardModel
-            await _repository.CreateAsync(cardModel);
+            if (cardVM == null)
+                return BadRequest("Card data is required.");
 
-            var cardVM = _mapper.Map<CardVM>(cardModel); // Return the created card
-            return CreatedAtAction(nameof(GetCardById), new { id = cardModel.Id }, cardVM);
+            var card = _mapper.Map<CardModel>(cardVM);
+            card.Id = Guid.NewGuid().ToString();
+            var createdcard = await _repository.CreateAsync(card);
+            if (createdcard == null)
+                return BadRequest("Card data is required.");
+            var cardtViewModel = _mapper.Map<CardVM>(createdcard);
+            return Ok(cardtViewModel);
+            //return CreatedAtAction(nameof(GetByIdSchool), new { id = school.Id }, school);
         }
+        // ✅ Create new card
         //[HttpPost]
-        //public async Task<IActionResult> Create([FromBody] CardVM vm)
+        //public async Task<IActionResult> CreateCard([FromBody] CardVM createCardVM)
         //{
-        //    if (vm == null)
-        //        return BadRequest();
-        //    //var cardModel = _mapper.Map<CardModel>(vm); // Map CreateCardVM -> CardModel
-        //    //var card = new CardModel
-        //    //{
-        //    //    Id = Guid.NewGuid().ToString(),
-        //    //    Name = new NameModel
-        //    //    {
-        //    //        Name = vm.Name.Name,   // ✅ صح
-        //    //        Title = vm.Name.Title  // ✅ صح
-        //    //    },
-        //    //    Date = vm.Date,
-        //    //    SexType = (SexType?)vm.SexType
-        //    //};
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
 
-        //    await _repository.CreateAsync(card);
-        //    return CreatedAtAction(nameof(GetCardById), new { id = card.Id }, card);
+        //    var cardModel = _mapper.Map<CardModel>(createCardVM); // Map CreateCardVM -> CardModel
+        //    await _repository.CreateAsync(cardModel);
+
+        //    var cardVM = _mapper.Map<CardVM>(cardModel); // Return the created card
+        //    return CreatedAtAction(nameof(GetCardById), new { id = cardModel.Id }, cardVM);
         //}
+        [HttpPut("UpdateCard/{id}")]
+        public async Task<ActionResult<CreateCardVM>> UpdateCard(string id, [FromBody] CreateCardVM vm)
+        {
+            if (!ModelState.IsValid || vm == null)
+                return BadRequest("البيانات غير صالحة.");
 
-        // ✅ Update existing card
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpdateCard(string id, [FromBody] UpdateCardVM updateCardVM)
-        //{
-        //    if (id != updateCardVM.Id)
-        //        return BadRequest("Card ID mismatch.");
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound("البطاقة غير موجود.");
 
-        //    var existingCard = await _repository.GetByIdAsync(id);
-        //    if (existingCard == null)
-        //        return NotFound();
 
-        //    var cardModel = _mapper.Map(updateCardVM, existingCard); // Update existing entity
-        //    await _repository.UpdateAsync(cardModel);
-
-        //    return NoContent();
-        //}
+            var card = _mapper.Map<CardModel>(vm);
+                card.Id = id;
+            var ns=   _mapper.Map(card, existing);
+            var item = await _repository.UpdateAsync(ns);
+            if (item != null)
+            {
+                var vmstu = _mapper.Map<CreateCardVM>(item);
+                return Ok(vmstu);
+            }
+            return BadRequest("تم التحديث بنجاح.");
+        }
 
         // ✅ Delete a card
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteCard/{id}")]
         public async Task<IActionResult> DeleteCard(string id)
         {
             var card = await _repository.GetByIdAsync(id);

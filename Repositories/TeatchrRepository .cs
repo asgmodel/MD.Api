@@ -127,6 +127,27 @@ public interface ITeacherRepository : IRepsitory<TeacherModel>
 public class TeacherRepository : Repository<TeacherModel>, ITeacherRepository
 {
     public TeacherRepository(DataContext context) : base(context) { }
+    public override async Task<IEnumerable<TeacherModel>?> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(s => s.Name)
+            .Include(s=> s.Moduls)
+            .ToListAsync();
+    }
+    public override async Task<TeacherModel?> GetByIdAsync(string id)
+    {
+        return await _dbSet
+            .Include(t => t.Name)
+            .Include(t => t.SchoolModels)
+                .ThenInclude(st => st.SchoolModel)
+            .Include(t => t.ModulsTeachers)
+                .ThenInclude(mt => mt.ModelModuls)
+            .Include(t => t.Students)
+            .Include(t => t.Rows)
+            .FirstOrDefaultAsync(t => t.Id == id);
+    }
+
+
     public override async Task<TeacherModel?> CreateAsync(TeacherModel entity)
     {
         // التحقق من وجود اسم
@@ -167,7 +188,7 @@ public class TeacherRepository : Repository<TeacherModel>, ITeacherRepository
 
         return createdTeacher;
     }
-
+     
     ////public async Task<RowModel?> GetRowAsync(string studentId)
     ////{
     ////    var student = await _dbSet

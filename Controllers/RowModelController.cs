@@ -116,13 +116,21 @@ namespace MD.Api.Controllers
         }
 
         // GET: /RowModel
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        //[HttpGet("GetAllRowModel")]
+
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var rowModels = await _repository.GetAllAsync();
+        //    return Ok(rowModels);
+        //}
+        [HttpGet("GetAllRowModel")]
+        public async Task<ActionResult<IEnumerable<RowVM>>> GetAllRowModel()
         {
-            var rowModels = await _repository.GetAllAsync();
-            return Ok(rowModels);
+            var row = await _repository.GetAllAsync();
+            var rowVM = _mapper.Map<IEnumerable<RowVM>>(row);
+            return Ok(rowVM);
         }
-       
+
         // GET: /RowModel/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
@@ -156,8 +164,8 @@ namespace MD.Api.Controllers
 
         //    return CreatedAtAction(nameof(GetById), new { id = rowVMs.Id }, rowModel);
         //}
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateRowVM rowModel)
+        [HttpPost("CreateRows")]
+        public async Task<ActionResult<CreateRowVM>> CreateRows([FromBody] CreateRowVM rowModel)
         {
             if (rowModel == null)
             {
@@ -188,7 +196,8 @@ namespace MD.Api.Controllers
             var rowVM = _mapper.Map<RowVM>(row); // Return the created card
 
 
-            return CreatedAtAction(nameof(GetById), new { id = createdRow.Id }, rowVM);
+            return Ok(rowVM);
+        
         }
 
         // PUT: /RowModel/{id}
@@ -211,22 +220,80 @@ namespace MD.Api.Controllers
 
         //    return NoContent();
         //}
+        //[HttpPut("UpdateRows/{id}")]
+        //public async Task<ActionResult<CreateRowVM>> UpdateRows(string id, [FromBody] CreateRowVM vm)
+        //{
+        //    if (!ModelState.IsValid || vm == null)
+        //        return BadRequest("البيانات غير صالحة.");
 
-        // DELETE: /RowModel/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        //    var existing = await _repository.GetByIdAsync(id);
+        //    if (existing == null)
+        //        return NotFound("صف غير موجود.");
+
+
+        //    var row = _mapper.Map<RowModel>(vm);
+        //    row.Id = id;
+
+        //    var item = await _repository.UpdateAsync(existing);
+        //    if (item != null)
+        //    {
+        //        var vmteacher = _mapper.Map<CreateRowVM>(item);
+        //        return Ok(vmteacher);
+        //    }
+        //    return BadRequest("تم التحديث بنجاح.");
+        //}
+
+
+        [HttpPut("UpdateRows/{id}")]
+        public async Task<ActionResult<CreateRowVM>> UpdateRows(string id, [FromBody] CreateRowVM vm)
         {
-            var existingRow = await _repository.GetByIdAsync(id);
-            if (existingRow == null)
+            if (!ModelState.IsValid || vm == null)
+                return BadRequest("البيانات غير صالحة.");
+
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound("صف غير موجود.");
+            
+            // تحديث الكائن الموجود مباشرةً بالقيم الجديدة
+            _mapper.Map(vm, existing); // هذا يُحدث الكائن الموجود وليس إنشاء كائن جديد
+
+            var item = await _repository.UpdateAsync(existing); // الآن التحديث فعلي
+            if (item != null)
             {
-                return NotFound();
+                var vmteacher = _mapper.Map<CreateRowVM>(item);
+                return Ok(vmteacher);
             }
 
-            await _repository.DeleteAsync(id);
-            return NoContent();
+            return BadRequest("فشل التحديث.");
         }
-        [HttpGet("search")]
-        public async Task<IActionResult> Search(string keyword)
+
+        // DELETE: /RowModel/{id}
+        [HttpDelete("DeleteRows{id}")]
+        public async Task<IActionResult> DeleteRows(string id)
+        {
+
+
+
+            var deleted =  await _repository.DeleteAsync(id);
+            if (!deleted)
+                return NotFound("صف غير موجود.");
+            var Isdle = await _repository.DeleteAsync(id);
+            if (!Isdle)
+                return Ok("تم الحذف بنجاح.");
+            return BadRequest("Nou Delete ");
+
+
+            //var existingRow = await _repository.DeleteAsync(id);
+            //if (existingRow == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //await _repository.DeleteAsync(id);
+            //return NoContent();
+        }
+        [HttpGet("SearchRows")]
+        public async Task<IActionResult> SearchRows(string keyword)
         {
             if (string.IsNullOrWhiteSpace(keyword))
                 return BadRequest("يرجى إدخال كلمة للبحث.");

@@ -54,17 +54,24 @@ public interface ICardRepository : IRepsitory<CardModel>
 
 public class CardRepository : Repository<CardModel>, ICardRepository
 {
-    private readonly INameRepository _nameRepository;
+    private readonly IStudentRepository _studentRepository ;
 
-    public CardRepository(DataContext context, INameRepository nameRepository) : base(context)
+    public CardRepository(DataContext context,  IStudentRepository studentRepository) : base(context)
     {
-        _nameRepository = nameRepository;
+        _studentRepository = studentRepository;
     }
-   
 
-   
+    public override async Task<CardModel?> CreateAsync(CardModel entity)
+    {
+        var card = await _studentRepository.GetByIdAsync(entity.StudentId);
+        if (card == null || card.RowId == null || card.SchoolId == null )
+            return null;
+        
+        return await base.CreateAsync(entity);
+    }
 
-  
-  
+
+
+
 }
 

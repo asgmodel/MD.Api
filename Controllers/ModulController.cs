@@ -27,8 +27,8 @@ namespace Api.SM.Controllers
             _mapper = mapper;
         }
       
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("GetAllModul")]
+        public async Task<ActionResult<IEnumerable<ModulVM>>> GetAllModul()
         {
             var modul = await _repository.GetAllAsync();
             var modulVM = _mapper.Map<IEnumerable<ModulVM>>(modul);
@@ -45,7 +45,7 @@ namespace Api.SM.Controllers
         //    return CreatedAtAction(nameof(GetById), new { id = created.Id }, _mapper.Map<ModulVM>(created));
         //}
         [HttpPost]
-        public async Task<IActionResult> CreateCard([FromBody] CreateModulVM creatVM)
+        public async Task<ActionResult<CreateModulVM>> CreateCard([FromBody] CreateModulVM creatVM)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,8 +57,8 @@ namespace Api.SM.Controllers
             return Ok(modulVM);
             // return CreatedAtAction(nameof(GetById), new { id = modul.Id }, cardVM);
         }
-        [HttpPost("ppo")]
-        public async Task<ActionResult<ModulModel>> Create([FromBody] CreateModulVM modulVM)
+        [HttpPost("CreateModul")]
+        public async Task<ActionResult<ModulModel>> CreateModul([FromBody] CreateModulVM modulVM)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -82,19 +82,40 @@ namespace Api.SM.Controllers
             var studentViewModel = _mapper.Map<ModulVM>(createdmodul);
             return Ok(studentViewModel);
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] CreateModulVM vm)
+        [HttpPut("UpdateModul/{id}")]
+        public async Task<ActionResult<CreateModulVM>> UpdateModul(string id, [FromBody] CreateModulVM vm)
         {
-            var existing = await _repository.GetWithRelationsAsync(id);
-            if (existing == null) return NotFound();
+            if (!ModelState.IsValid || vm == null)
+                return BadRequest("البيانات غير صالحة.");
 
-            _mapper.Map(vm, existing);
-            var updated = await _repository.UpdateAsync(existing);
-            return Ok(_mapper.Map<ModulVM>(updated));
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                return NotFound("الطالب غير موجود.");
+
+
+            var modul = _mapper.Map<ModulModel>(vm);
+            modul.Id = id;
+
+            var item = await _repository.UpdateAsync(existing);
+            if (item != null)
+            {
+                var vmstu = _mapper.Map<CreateModulVM>(item);
+                return Ok(vmstu);
+            }
+            return BadRequest("تم التحديث بنجاح.");
         }
+        [HttpDelete("DeleteModul/{id}")]
+        public async Task<IActionResult> DeleteModul(string id)
+        {
+            var card = await _repository.GetByIdAsync(id);
+            if (card == null)
+                return NotFound();
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id)
+            await _repository.DeleteAsync(id);
+            return NoContent();
+        }
+        [HttpGet("GetByIdModul/{id}")]
+        public async Task<IActionResult> GetByIdModul(string id)
         {
             var modul = await _repository.GetWithRelationsAsync(id);
             if (modul == null) return NotFound();

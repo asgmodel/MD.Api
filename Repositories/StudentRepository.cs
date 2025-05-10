@@ -350,6 +350,16 @@ namespace Api.SM.Repository
 
             return student?.Row;
         }
+        public  async Task<bool> DeleteAsync(string Id)
+        {
+            var students = await _dbSet.Where(s => s.SchoolId == Id || s.RowId == Id).ToListAsync();
+            if (students.Any())
+            {
+                _dbSet.RemoveRange(students);
+            }
+            await base.DeleteAsync(Id);
+            return true;
+        }
 
         public async Task<ICollection<ModulModel>> GetModulsAsync(string studentId)
         {
@@ -382,5 +392,7 @@ namespace Api.SM.Repository
            // await _dbSet.SaveChangesAsync();
             return true;
         }
+
+       
     }
 }

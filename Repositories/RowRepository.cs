@@ -15,9 +15,14 @@ namespace Api.SM.Repository
     // تعريف الصف الخاص بـ RowRepository
     public class RowRepository : Repository<RowModel>, IRowRepository
     {
-        //private readonly ISchoolRepository _schoolRepository;
+        //private readonly IStudentRepository _studentRepository;
+        //private readonly IModulRepository _modulRepository;
+
+
         public RowRepository(DataContext context ) : base(context)
         {
+           //_studentRepository = studentRepository;
+           // _modulRepository = modulRepository;
             //_schoolRepository = schoolRepository;
         }
 
@@ -58,20 +63,83 @@ namespace Api.SM.Repository
         //public async Task<SchoolModel> IsSchoolExistsAsync(string schoolId)
         //{
         //    return await _dbSet.AnyAsync(s => s.Id == schoolId);
+       // }
+        public override async Task<bool> DeleteAsync(string Id)
+        {
+
+            var rows = await _dbSet.Where(r => r.SchoolId == Id ).ToListAsync();
+            if (rows.Any())
+            {
+                //   _dbSet.RemoveRange(rows);
+                _dbSet.RemoveRange(rows);
+            }
+            await base.DeleteAsync(Id);
+            return true;
+        }
+      
+
+
+        //public override async Task<bool> DeleteAsync(string schoolId)
+        //{
+        //    var rows = await _dbSet
+        //        .Where(r => r.SchoolId == schoolId || r.SchoolId == null)
+        //        .ToListAsync();
+
+        //    if (rows.Any())
+        //    {
+        //        _dbSet.RemoveRange(rows);
+        //        // تأكد من تنفيذ الحذف فعليًا
+        //    }
+
+        //    return true;
         //}
+        //public override async Task<bool> DeleteAsync(string schoolId)
+        //{
+        //    var rows = await _dbSet
+        //        .Where(r => r.SchoolId == schoolId || r.SchoolId == null)
+        //        .ToListAsync();
+        //    var row = await _dbSet
+        //    .Include(s => s.Students)
+        //    .Include(s => s.Teachers)
+        //    .Include(s => s.Moduls)
+        //    .FirstOrDefaultAsync(s => s.Id == schoolId);
+        //    if (rows.Any())
+        //    {
+        //        _dbSet.RemoveRange(rows);
+        //        // تأكد من تنفيذ الحذف فعليًا
+        //    }
+
+        //    return true;
+        //}
+
 
         public override Task<RowModel?> GetByIdAsync(string id)
         {
-
-
-            return _dbSet.
-                   Where(x => x.Id == id).
-                   Include(p => p.School).
-                   FirstOrDefaultAsync();
+            return _dbSet
+                .Where(x => x.Id == id)
+                .Include(p => p.School)
+                .Include(p => p.Moduls)
+                .Include(p => p.Teachers)
+                .Include(p => p.Students)
+                .FirstOrDefaultAsync();
         }
-        
 
-       public async Task<RowModel?> GetRowNameByIdAsync(string name)
+  
+
+        //public override Task<RowModel?> GetByIdAsync(string id)
+        //{
+
+
+
+        //    return _dbSet.
+        //           Where(x => x.Id == id).
+        //           Include(p => p.School).
+
+        //           FirstOrDefaultAsync();
+        //}
+
+
+        public async Task<RowModel?> GetRowNameByIdAsync(string name)
         {
             return await _dbSet.
                            Where(x => x.Name == name).
